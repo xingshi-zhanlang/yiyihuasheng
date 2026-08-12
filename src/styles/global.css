@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* HiDREAM 品牌主题色 - 温馨高级自然色系 */
+@theme {
+  /* 背景与底色 */
+  --color-cream: #faf6f0; /* 奶油白 - 背景 */
+  --color-milk-tea: #e8d5c4; /* 牛乳茶 - 卡片背景 */
+
+  /* 主色调 */
+  --color-olive: #6b7f5a; /* 橄榄绿 - 主色调 */
+  --color-olive-dark: #4a5c3d; /* 深橄榄 - 文字 */
+
+  /* 强调色 */
+  --color-caramel: #b8865f; /* 焦糖棕 - 强调色 */
+  --color-milk-brown: #d4b896; /* 牛乳棕 - 次要色 */
+
+  /* 文字色 */
+  --color-dark-brown: #3d2e1f; /* 深棕 - 标题文字 */
+  --color-stone: #8b7d6b; /* 石色 - 正文文字 */
+
+  /* 字体 */
+  --font-sans: "Inter", "PingFang SC", "Noto Sans SC", system-ui, -apple-system,
+    sans-serif;
+  --font-serif: "Playfair Display", "Noto Serif SC", Georgia, serif;
+  --font-rounded: "Quicksand", "PingFang SC", system-ui, sans-serif;
+
+  /* 阴影 */
+  --shadow-soft: 0 10px 40px -12px rgba(139, 125, 107, 0.18);
+  --shadow-card: 0 6px 30px -8px rgba(61, 46, 31, 0.12);
+  --shadow-hover: 0 18px 50px -10px rgba(107, 127, 90, 0.28);
+}
+
+/* 基础样式 */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-dark-brown);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题字体 */
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.font-rounded {
+  font-family: var(--font-rounded);
+}
+
+/* 柔和阴影工具类 */
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+.shadow-hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-milk-brown);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-caramel);
+}
+
+/* 选中文字颜色 */
+::selection {
+  background: var(--color-olive);
+  color: var(--color-cream);
+}
+
+/* 渐入动画 */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fadeUp 0.7s ease-out both;
+}
+
+/* WhatsApp 浮窗脉冲动画 */
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+.animate-wa-pulse {
+  animation: wa-pulse 2.4s infinite;
+}

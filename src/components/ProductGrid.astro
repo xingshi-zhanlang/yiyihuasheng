@@ -1,0 +1,28 @@
+---
+// 产品网格：接收产品数组，渲染响应式网格
+import type { Product } from '../lib/products';
+import ProductCard from './ProductCard.astro';
+import { t, type Locale } from '../i18n/utils';
+
+interface Props {
+  products: Product[];
+  eager?: boolean;
+  locale?: Locale;
+}
+
+const { products, eager = false, locale = 'en' } = Astro.props;
+---
+
+{
+  products.length > 0 ? (
+    <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+      {products.map((p, i) => (
+        <ProductCard product={p} eager={eager && i < 4} locale={locale} />
+      ))}
+    </div>
+  ) : (
+    <div class="rounded-3xl border border-dashed border-milk-tea bg-white/50 p-12 text-center">
+      <p class="text-stone">No products available in this category yet.</p>
+    </div>
+  )
+}

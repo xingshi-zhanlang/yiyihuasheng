@@ -1,0 +1,46 @@
+---
+// 品类导航：横向标签式导航，高亮当前品类
+import { CATEGORIES } from '../consts';
+import { getCategoriesWithCounts } from '../lib/products';
+
+interface Props {
+  active?: string; // 当前品类 slug
+  showAll?: boolean; // 是否显示 "All" 入口
+}
+
+const { active, showAll = true } = Astro.props;
+const cats = getCategoriesWithCounts();
+const path = Astro.url.pathname;
+---
+
+<div class="flex flex-wrap items-center gap-2.5">
+  {
+    showAll && (
+      <a
+        href="/products"
+        class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+          !active || active === 'all'
+            ? 'bg-olive text-cream'
+            : 'border border-milk-tea text-stone hover:border-olive hover:text-olive-dark'
+        }`}
+      >
+        All Products
+      </a>
+    )
+  }
+  {
+    cats.map((c) => (
+      <a
+        href={`/products/${c.slug}`}
+        class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+          active === c.slug
+            ? 'bg-olive text-cream'
+            : 'border border-milk-tea text-stone hover:border-olive hover:text-olive-dark'
+        }`}
+      >
+        {c.name}
+        <span class="ml-1.5 text-xs opacity-70">{c.count}</span>
+      </a>
+    ))
+  }
+</div>

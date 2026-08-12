@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "home": "首页",
+    "products": "产品",
+    "about": "关于我们",
+    "blog": "博客",
+    "contact": "联系我们"
+  },
+  "action": {
+    "getQuote": "获取报价",
+    "inquire": "询价",
+    "inquireNow": "立即询价",
+    "emailInquiry": "邮件咨询",
+    "browseProducts": "浏览产品",
+    "viewDetails": "查看详情",
+    "viewAll": "查看全部",
+    "send": "发送询盘",
+    "chatWhatsapp": "WhatsApp 咨询"
+  },
+  "hero": {
+    "badge": "宠物出行用品 · 批发 & OEM/ODM",
+    "title1": "与爱宠",
+    "title2": "同行探索",
+    "subtitle": "与爱宠同行，从 HiDREAM 开始",
+    "description": "灵感源自山谷 — HiDREAM® 宠生几何以自然柔和的色调设计宠物外出包、胸背牵引和出行配件，采用环保 RPET 与尼龙材质，为全球 B2B 合作伙伴精工打造。",
+    "statSkus": "个产品 SKU",
+    "statLines": "大产品线",
+    "statOem": "定制服务",
+    "badgeValley": "山谷系列",
+    "badgeEco": "RPET · 环保材质"
+  },
+  "categories": {
+    "new-arrivals": "新品推荐",
+    "carrier-bags": "猫狗外出包",
+    "cat-products": "猫产品专区",
+    "dog-travel": "狗狗出行产品",
+    "functional": "其他功能产品",
+    "title": "按系列选购",
+    "subtitle": "五大产品系列，涵盖航空包、恢复服、旅行碗和推车等全部出行场景。"
+  },
+  "featured": {
+    "title": "精选产品",
+    "subtitle": "最受欢迎的批发产品精选，联系我们获取完整目录和报价。"
+  },
+  "product": {
+    "variants": "个变体",
+    "sku": "SKU",
+    "colors": "颜色",
+    "sizes": "尺码",
+    "specsTable": "变体与规格",
+    "moreIn": "更多",
+    "priceNote": "价格请咨询 · 最小起订量与交货期以报价为准"
+  },
+  "about": {
+    "storyTitle": "我们的故事",
+    "storyP1": "HiDREAM® 宠生几何的灵感源自山谷 — 它的宁静、自然的色彩和永恒的节奏。我们相信宠物出行用品应该和我们自己使用的物品一样用心。",
+    "storyP2": "每一件产品都始于山谷系列设计语言：柔软的 RPET 织带、柔和的大地色调和耐用的五金。在此基础上，我们为全球批发合作伙伴提供 OEM/ODM 定制服务。",
+    "milestonesTitle": "发展历程",
+    "valuesTitle": "我们的坚持",
+    "value1Title": "设计驱动",
+    "value1Desc": "每一件产品都从设计意图出发，而非规格表。形式追随感受。",
+    "value2Title": "环保理念",
+    "value2Desc": "RPET 织带、可回收包装和低浪费生产，尽可能减少环境影响。",
+    "value3Title": "合作伙伴优先",
+    "value3Desc": "透明的批发条款、可靠的交货期和真正的 OEM/ODM 支持。"
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "告诉我们您的需求，我们将在 24 小时内回复批发价格、最小起订量和交货期。",
+    "formName": "您的姓名",
+    "formEmail": "邮箱地址",
+    "formCompany": "公司",
+    "formCountry": "国家",
+    "formMessage": "您的询盘",
+    "formPlaceholder": "我对你们的外出包和狗胸背带感兴趣，请发送批发目录和最小起订量。",
+    "formSuccess": "感谢！我们将在 24 小时内回复您。",
+    "whatsapp": "WhatsApp",
+    "email": "邮箱",
+    "address": "地址"
+  },
+  "footer": {
+    "description": "宠物出行用品设计品牌。灵感源自山谷，采用 RPET 和尼龙为宠物和它们的主人精工打造。全球 OEM/ODM 与批发。",
+    "products": "产品",
+    "company": "公司",
+    "getInTouch": "联系方式",
+    "rights": "保留所有权利。",
+    "wholesaleOnly": "仅限批发 & OEM/ODM · 无零售"
+  },
+  "whatsapp": {
+    "defaultMsg": "您好，我想获取 HiDREAM 宠物产品的批发目录和报价。",
+    "quoteMsg": "您好，我想获取你们宠物产品的批发报价。",
+    "productMsg": "您好，我对这款产品感兴趣：\n{name}\nSKU: {sku}\n请发送批发价格和最小起订量。",
+    "detailMsg": "您好，我对这款产品感兴趣：\n{name}\nSKU: {sku}\n分类: {category}\n\n请发送批发价格、最小起订量和交货期。"
+  },
+  "blog": {
+    "title": "博客",
+    "subtitle": "宠物出行技巧、产品故事和来自 HiDREAM 团队的行业洞察。"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您查找的页面不存在或已被移动。",
+    "backHome": "返回首页"
+  },
+  "index": {
+    "valleyTitle": "灵感源自山谷的宁静",
+    "valleyP1": "HiDREAM® 的灵感源自山谷的宁静与生态循环——植物的生长、动物的生命，以及物质回归大地。",
+    "valleyP2": "通过四种柔和的自然色调、环保 RPET 与尼龙材质，以及贴合宠物体态的造型设计，每件产品都让宠物与主人共同放松、自由探索——在每一次出行中温柔拥抱自然。",
+    "softTones": "柔和自然色调",
+    "ecoFabric": "环保再生面料",
+    "collectionsBadge": "产品系列",
+    "collectionsTitle": "探索我们的产品线",
+    "featuredBadge": "精选",
+    "viewAllProducts": "查看全部产品",
+    "whyBadge": "为何选择 HiDREAM",
+    "whyTitle": "值得信赖的合作伙伴",
+    "trustedBadge": "全球信赖",
+    "trustedTitle": "合作伙伴评价",
+    "ctaTitle": "准备好与 HiDREAM 合作了吗？",
+    "ctaDesc": "获取完整批发目录、最小起订量和报价。通过 WhatsApp 与我们团队沟通，或发送询盘——我们将在 24 小时内回复。",
+    "itemsUnit": "款"
+  },
+  "aboutPage": {
+    "heroBadge": "关于我们",
+    "heroTitle": "为宠物与主人设计每一段旅程",
+    "heroDesc": "我们是一家宠物出行用品设计品牌。从山谷的宁静到日常的节奏，我们打造外出包、胸背牵引和出行配件，让每次出行都成为对自然的温柔拥抱。",
+    "statSkus": "个 SKU",
+    "statCollections": "大系列",
+    "statSeries": "种设计系列",
+    "valleyDesc": "四种柔和自然色调搭配 RPET 再生面料与耐用尼龙。贴合宠物体态设计，出行安心自在——每一次旅程都是对自然的深度拥抱。",
+    "boboDesc": "趣味十足的个性系列，结合皮革点缀与高密度尼龙。为活力十足的狗狗和喜爱大胆配色与可靠五金的主人而打造。",
+    "factoryBadge": "工厂与品质",
+    "factoryTitle": "产能与认证",
+    "ctaTitle": "让我们携手打造您的宠物产品线",
+    "ctaDesc": "OEM/ODM、定制材质、贴牌——立即与我们的团队沟通。"
+  },
+  "contactPage": {
+    "teamTitle": "与我们的团队沟通",
+    "teamDesc": "我们随时为您提供产品选择、定制和物流方面的帮助。",
+    "whatsappFastest": "WhatsApp（最快）",
+    "businessHours": "营业时间",
+    "hours": "周一至周六 · 9:00 – 18:00 (GMT+8)",
+    "hoursReply": "工作日 24 小时内回复",
+    "formTitle": "发送批发询盘",
+    "formDesc": "告诉我们您的需求——产品、数量、定制要求。"
+  },
+  "productsPage": {
+    "allTitle": "全部产品",
+    "countDesc": "{products} 款产品，涵盖 {cats} 大系列。点击任意产品查看完整规格，或直接通过 WhatsApp 询价。"
+  },
+  "blogPage": {
+    "heroTitle": "洞察与指南",
+    "comingSoon": "即将上线",
+    "lookingTitle": "想直接了解产品信息？",
+    "lookingDesc": "浏览我们的完整目录，或直接发送批发询盘。"
+  }
+}

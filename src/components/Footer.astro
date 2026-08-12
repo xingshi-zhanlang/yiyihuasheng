@@ -1,0 +1,110 @@
+---
+// 页脚：品牌信息、导航、联系方式、社媒
+import { SITE, CONTACT, CATEGORIES } from '../consts';
+import { t, getLocalePath, getCategoryName, type Locale } from '../i18n/utils';
+
+interface Props {
+  locale?: Locale;
+}
+const locale: Locale = Astro.props.locale || 'en';
+const basePath = getLocalePath(locale);
+
+const year = new Date().getFullYear();
+const waLink = `https://wa.me/${CONTACT.whatsapp}`;
+
+const navItems = [
+  { href: '/', key: 'nav.home' },
+  { href: '/products', key: 'nav.products' },
+  { href: '/about', key: 'nav.about' },
+  { href: '/blog', key: 'nav.blog' },
+  { href: '/contact', key: 'nav.contact' },
+];
+---
+
+<footer class="mt-24 border-t border-milk-tea/60 bg-milk-tea/30">
+  <div class="mx-auto max-w-7xl px-4 py-16 md:px-8">
+    <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+      <!-- 品牌简介 -->
+      <div class="lg:col-span-1">
+        <div class="flex items-center gap-2.5">
+          <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-olive text-cream">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6"></path>
+            </svg>
+          </span>
+          <div class="flex flex-col leading-none">
+            <span class="font-display text-lg font-bold text-dark-brown">HiDREAM</span>
+            <span class="text-[11px] tracking-[0.18em] text-stone">宠生几何</span>
+          </div>
+        </div>
+        <p class="mt-4 text-sm leading-relaxed text-stone">
+          {t(locale, 'footer.description')}
+        </p>
+        <div class="mt-5 flex items-center gap-3">
+          <a href={waLink} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="flex h-9 w-9 items-center justify-center rounded-full bg-cream text-olive-dark transition-colors hover:bg-olive hover:text-cream">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.041zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"></path></svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="flex h-9 w-9 items-center justify-center rounded-full bg-cream text-olive-dark transition-colors hover:bg-olive hover:text-cream">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href={`mailto:${CONTACT.email}`} aria-label="Email" class="flex h-9 w-9 items-center justify-center rounded-full bg-cream text-olive-dark transition-colors hover:bg-olive hover:text-cream">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 产品分类 -->
+      <div>
+        <h3 class="font-display text-base font-semibold text-dark-brown">{t(locale, 'footer.products')}</h3>
+        <ul class="mt-4 space-y-2.5">
+          {CATEGORIES.map((c) => (
+            <li>
+              <a href={basePath + '/products/' + c.slug} class="text-sm text-stone transition-colors hover:text-olive-dark">
+                {getCategoryName(locale, c.slug)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- 导航 -->
+      <div>
+        <h3 class="font-display text-base font-semibold text-dark-brown">{t(locale, 'footer.company')}</h3>
+        <ul class="mt-4 space-y-2.5">
+          {navItems.map((link) => (
+            <li>
+              <a href={basePath + link.href} class="text-sm text-stone transition-colors hover:text-olive-dark">
+                {t(locale, link.key)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- 联系方式 -->
+      <div>
+        <h3 class="font-display text-base font-semibold text-dark-brown">{t(locale, 'footer.getInTouch')}</h3>
+        <ul class="mt-4 space-y-3 text-sm text-stone">
+          <li class="flex items-start gap-2.5">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-olive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <a href={`mailto:${CONTACT.email}`} class="transition-colors hover:text-olive-dark">{CONTACT.email}</a>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-olive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a href={waLink} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-olive-dark">{CONTACT.whatsappDisplay}</a>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-olive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>{CONTACT.address}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-milk-tea/60 pt-6 text-xs text-stone md:flex-row">
+      <p>© {year} {SITE.brand}. {t(locale, 'footer.rights')}</p>
+      <p>{t(locale, 'footer.wholesaleOnly')}</p>
+    </div>
+  </div>
+</footer>

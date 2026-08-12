@@ -1,0 +1,28 @@
+---
+// 404 页面
+import Layout from '../layouts/Layout.astro';
+import { CONTACT } from '../consts';
+import { t, getLocalePath, type Locale } from '../i18n/utils';
+
+const locale: Locale = 'en';
+const basePath = getLocalePath(locale);
+
+const waLink = `https://wa.me/${CONTACT.whatsapp}`;
+---
+
+<Layout locale="en" title="Page Not Found — HiDREAM®">
+  <section class="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center md:py-32">
+    <p class="font-display text-7xl font-bold text-olive md:text-8xl">404</p>
+    <h1 class="mt-4 font-display text-2xl font-bold text-dark-brown md:text-3xl">
+      {t(locale, 'notFound.title')}
+    </h1>
+    <p class="mt-3 max-w-md text-stone">
+      {t(locale, 'notFound.description')}
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href={`${basePath}/`} class="rounded-full bg-olive px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-olive-dark">{t(locale, 'notFound.backHome')}</a>
+      <a href={`${basePath}/products`} class="rounded-full border border-milk-tea bg-cream px-6 py-3 text-sm font-semibold text-dark-brown transition-colors hover:border-olive hover:text-olive-dark">{t(locale, 'action.browseProducts')}</a>
+      <a href={waLink} target="_blank" rel="noopener noreferrer" class="rounded-full border border-milk-tea bg-cream px-6 py-3 text-sm font-semibold text-dark-brown transition-colors hover:border-olive hover:text-olive-dark">WhatsApp Us</a>
+    </div>
+  </section>
+</Layout>

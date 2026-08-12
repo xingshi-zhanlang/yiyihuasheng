@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "action": {
+    "getQuote": "Get a Quote",
+    "inquire": "Inquire",
+    "inquireNow": "Inquire Now",
+    "emailInquiry": "Email Inquiry",
+    "browseProducts": "Browse Products",
+    "viewDetails": "View details",
+    "viewAll": "View all",
+    "send": "Send Inquiry",
+    "chatWhatsapp": "Chat on WhatsApp"
+  },
+  "hero": {
+    "badge": "PET TRAVEL GEAR · WHOLESALE & OEM/ODM",
+    "title1": "Travel with your",
+    "title2": "beloved companion",
+    "subtitle": "与爱宠同行，从 HiDREAM 开始",
+    "description": "Inspired by the valley — HiDREAM® designs pet carriers, harnesses and travel essentials in soft natural tones with eco-friendly RPET & nylon. Crafted for B2B partners worldwide.",
+    "statSkus": "SKUs in catalog",
+    "statLines": "Product lines",
+    "statOem": "Custom service",
+    "badgeValley": "Valley Series",
+    "badgeEco": "RPET · Eco-friendly"
+  },
+  "categories": {
+    "new-arrivals": "New Arrivals",
+    "carrier-bags": "Carrier Bags",
+    "cat-products": "Cat Products",
+    "dog-travel": "Dog Travel",
+    "functional": "Functional Gear",
+    "title": "Shop by Collection",
+    "subtitle": "Five collections covering everything from airline carriers to recovery suits, travel bowls and strollers."
+  },
+  "featured": {
+    "title": "Featured Products",
+    "subtitle": "A selection of our most popular wholesale items. Contact us for the full catalog and pricing."
+  },
+  "product": {
+    "variants": "variants",
+    "sku": "SKU",
+    "colors": "Colors",
+    "sizes": "Sizes",
+    "specsTable": "Variants & Specifications",
+    "moreIn": "More in",
+    "priceNote": "Prices available on request · MOQ & lead time provided in quote"
+  },
+  "about": {
+    "storyTitle": "Our story",
+    "storyP1": "HiDREAM® 宠生几何 draws inspiration from the valley — its tranquility, natural palette and timeless rhythms. We believe pet travel gear should feel as considered as the things we use ourselves.",
+    "storyP2": "Every product begins with the Valley Series design language: soft RPET webbing, muted earth tones, and hardware that lasts. From there, we offer OEM/ODM customization for wholesale partners worldwide.",
+    "milestonesTitle": "Our journey",
+    "valuesTitle": "What we stand for",
+    "value1Title": "Design-led",
+    "value1Desc": "Every product starts from a design intent, not a spec sheet. Form follows feeling.",
+    "value2Title": "Eco-conscious",
+    "value2Desc": "RPET webbing, recyclable packaging and low-waste production wherever possible.",
+    "value3Title": "Partner-focused",
+    "value3Desc": "Transparent wholesale terms, reliable lead times and genuine OEM/ODM support."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Send us your requirements and we'll respond within 24 hours with wholesale pricing, MOQ and lead time.",
+    "formName": "Your Name",
+    "formEmail": "Email Address",
+    "formCompany": "Company",
+    "formCountry": "Country",
+    "formMessage": "Your Inquiry",
+    "formPlaceholder": "I'm interested in your carrier bags and dog harnesses. Please send the wholesale catalog and MOQ.",
+    "formSuccess": "Thank you! We'll get back to you within 24 hours.",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "address": "Address"
+  },
+  "footer": {
+    "description": "Pet travel gear design brand. Inspired by the valley — crafted with RPET and nylon for pets and their humans. OEM/ODM & wholesale worldwide.",
+    "products": "Products",
+    "company": "Company",
+    "getInTouch": "Get in Touch",
+    "rights": "All rights reserved.",
+    "wholesaleOnly": "Wholesale & OEM/ODM only · No retail checkout"
+  },
+  "whatsapp": {
+    "defaultMsg": "Hi, I'd like a wholesale catalog and pricing for HiDREAM pet products.",
+    "quoteMsg": "Hi, I'd like to get a wholesale quote for your pet products.",
+    "productMsg": "Hi, I'm interested in this product:\n{name}\nSKU: {sku}\nPlease send wholesale pricing and MOQ.",
+    "detailMsg": "Hi, I'm interested in this product:\n{name}\nSKU: {sku}\nCategory: {category}\n\nPlease send wholesale pricing, MOQ and lead time."
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Pet travel tips, product stories and industry insights from the HiDREAM team."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home"
+  },
+  "index": {
+    "valleyTitle": "Inspired by the calm of the valley",
+    "valleyP1": "HiDREAM® draws inspiration from the tranquility and ecological cycle of the valley — the growth of plants, the life of animals, and the return of matter to the earth.",
+    "valleyP2": "Through four soft natural tones, eco-friendly RPET and nylon, and forms shaped around pet anatomy, every product invites pets and their humans to relax and roam freely — a gentle embrace of nature in every journey.",
+    "softTones": "Soft natural tones",
+    "ecoFabric": "Recycled eco fabric",
+    "collectionsBadge": "Collections",
+    "collectionsTitle": "Explore our product lines",
+    "featuredBadge": "Featured",
+    "viewAllProducts": "View all products",
+    "whyBadge": "Why HiDREAM",
+    "whyTitle": "A partner you can trust",
+    "trustedBadge": "Trusted Worldwide",
+    "trustedTitle": "What partners say",
+    "ctaTitle": "Ready to source with HiDREAM?",
+    "ctaDesc": "Get our full wholesale catalog, MOQ and pricing. Chat with our team on WhatsApp or send an inquiry — we reply within 24 hours.",
+    "itemsUnit": "items"
+  },
+  "aboutPage": {
+    "heroBadge": "About Us",
+    "heroTitle": "Designing journeys for pets & humans",
+    "heroDesc": "We are a pet travel gear design brand. From the calm of the valley to the rhythm of everyday life, we craft carriers, harnesses and essentials that make every outing a gentle embrace of nature.",
+    "statSkus": "SKUs",
+    "statCollections": "Collections",
+    "statSeries": "Design series",
+    "valleyDesc": "Four soft natural tones meet RPET recycled fabric and durable nylon. Designed around pet anatomy for relaxed, secure travel — a deep embrace of nature in every journey.",
+    "boboDesc": "A playful, characterful line combining leather accents with high-density nylon. Built for energetic dogs and owners who love bold color and reliable hardware.",
+    "factoryBadge": "Factory & Quality",
+    "factoryTitle": "Capabilities & certifications",
+    "ctaTitle": "Let's build your pet collection together",
+    "ctaDesc": "OEM/ODM, custom materials, private label — talk to our team today."
+  },
+  "contactPage": {
+    "teamTitle": "Talk to our team",
+    "teamDesc": "We're here to help with product selection, customization and shipping.",
+    "whatsappFastest": "WhatsApp (fastest)",
+    "businessHours": "Business hours",
+    "hours": "Mon – Sat · 9:00 – 18:00 (GMT+8)",
+    "hoursReply": "Replies within 24 hours on weekdays",
+    "formTitle": "Send a wholesale inquiry",
+    "formDesc": "Tell us what you need — products, quantities, customization."
+  },
+  "productsPage": {
+    "allTitle": "All Products",
+    "countDesc": "{products} products across {cats} collections. Click any item for full specs, or inquire directly via WhatsApp."
+  },
+  "blogPage": {
+    "heroTitle": "Insights & Guides",
+    "comingSoon": "Coming soon",
+    "lookingTitle": "Looking for product information instead?",
+    "lookingDesc": "Browse our full catalog or send a wholesale inquiry directly."
+  }
+}

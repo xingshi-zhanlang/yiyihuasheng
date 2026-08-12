@@ -1,0 +1,110 @@
+---
+// 询盘表单（Web3Forms）：access_key 为占位符，部署前替换
+import { CONTACT } from '../consts';
+import { t, type Locale } from '../i18n/utils';
+
+interface Props {
+  productName?: string;
+  productSku?: string;
+  locale?: Locale;
+}
+
+const { productName, productSku, locale = 'en' } = Astro.props;
+
+const subject = productName
+  ? `Wholesale Inquiry: ${productName} (${productSku || 'N/A'})`
+  : 'New Wholesale Inquiry from HiDREAM website';
+---
+
+<form
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  class="space-y-4"
+>
+  <input type="hidden" name="access_key" value={CONTACT.web3formsKey} />
+  <input type="hidden" name="subject" value={subject} />
+  <input type="hidden" name="from_name" value="HiDREAM Website" />
+  {productName && <input type="hidden" name="product" value={productName} />}
+  {productSku && <input type="hidden" name="sku" value={productSku} />}
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label for="name" class="mb-1.5 block text-sm font-medium text-dark-brown">
+        {t(locale, 'contact.formName')} <span class="text-caramel">*</span>
+      </label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required
+        placeholder="John Smith"
+        class="w-full rounded-2xl border border-milk-tea bg-cream/60 px-4 py-3 text-sm text-dark-brown outline-none transition-colors placeholder:text-stone/60 focus:border-olive focus:bg-white"
+      />
+    </div>
+    <div>
+      <label for="email" class="mb-1.5 block text-sm font-medium text-dark-brown">
+        {t(locale, 'contact.formEmail')} <span class="text-caramel">*</span>
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        placeholder="you@company.com"
+        class="w-full rounded-2xl border border-milk-tea bg-cream/60 px-4 py-3 text-sm text-dark-brown outline-none transition-colors placeholder:text-stone/60 focus:border-olive focus:bg-white"
+      />
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label for="company" class="mb-1.5 block text-sm font-medium text-dark-brown">
+        {t(locale, 'contact.formCompany')}
+      </label>
+      <input
+        type="text"
+        id="company"
+        name="company"
+        placeholder={locale === 'zh' ? '您的公司' : 'Your company'}
+        class="w-full rounded-2xl border border-milk-tea bg-cream/60 px-4 py-3 text-sm text-dark-brown outline-none transition-colors placeholder:text-stone/60 focus:border-olive focus:bg-white"
+      />
+    </div>
+    <div>
+      <label for="country" class="mb-1.5 block text-sm font-medium text-dark-brown">
+        {t(locale, 'contact.formCountry')}
+      </label>
+      <input
+        type="text"
+        id="country"
+        name="country"
+        placeholder={locale === 'zh' ? '中国' : 'United States'}
+        class="w-full rounded-2xl border border-milk-tea bg-cream/60 px-4 py-3 text-sm text-dark-brown outline-none transition-colors placeholder:text-stone/60 focus:border-olive focus:bg-white"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="message" class="mb-1.5 block text-sm font-medium text-dark-brown">
+      {t(locale, 'contact.formMessage')}
+    </label>
+    <textarea
+      id="message"
+      name="message"
+      rows="5"
+      placeholder={t(locale, 'contact.formPlaceholder')}
+      class="w-full resize-y rounded-2xl border border-milk-tea bg-cream/60 px-4 py-3 text-sm text-dark-brown outline-none transition-colors placeholder:text-stone/60 focus:border-olive focus:bg-white"
+    >{productName ? (locale === 'zh' ? `我对: ${productName} (SKU: ${productSku || 'N/A'}) 感兴趣。请发送批发价格和最小起订量。` : `I'm interested in: ${productName} (SKU: ${productSku || 'N/A'}). Please send wholesale pricing and MOQ.`) : ''}</textarea>
+  </div>
+
+  <button
+    type="submit"
+    class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-olive px-6 py-3.5 text-sm font-semibold text-cream shadow-soft transition-all hover:bg-olive-dark hover:shadow-hover sm:w-auto"
+  >
+    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    {t(locale, 'action.send')}
+  </button>
+  <p class="text-xs text-stone">
+    {locale === 'zh' ? '我们通常在24小时内回复。您的信息将严格保密。' : 'We typically reply within 24 hours. Your information is kept confidential.'}
+  </p>
+</form>

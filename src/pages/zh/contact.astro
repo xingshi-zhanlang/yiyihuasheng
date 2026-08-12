@@ -1,0 +1,114 @@
+---
+// 联系我们：询盘表单（Web3Forms）+ WhatsApp 按钮 + 邮箱
+import Layout from '../../layouts/Layout.astro';
+import InquiryForm from '../../components/InquiryForm.astro';
+import { CONTACT } from '../../consts';
+import { t, getLocalePath, type Locale } from '../../i18n/utils';
+
+const locale: Locale = 'zh';
+const basePath = getLocalePath(locale);
+
+const waLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
+  t(locale, 'whatsapp.defaultMsg'),
+)}`;
+---
+
+<Layout
+  locale="zh"
+  title="联系 HiDREAM® — 批发询盘 | 宠物出行用品"
+  description="联系 HiDREAM® 获取批发报价、OEM/ODM 和产品目录。通过表单、WhatsApp 或邮箱发送询盘。我们将在 24 小时内回复。"
+>
+  <section class="border-b border-milk-tea/60 bg-milk-tea/20">
+    <div class="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
+      <nav class="text-xs text-stone" aria-label="Breadcrumb">
+        <a href={`${basePath}/`} class="hover:text-olive-dark">{t(locale, 'nav.home')}</a>
+        <span class="mx-1.5">/</span>
+        <span class="text-dark-brown">{t(locale, 'nav.contact')}</span>
+      </nav>
+      <h1 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl lg:text-5xl">
+        {t(locale, 'contact.title')}
+      </h1>
+      <p class="mt-3 max-w-2xl text-stone">
+        {t(locale, 'contact.subtitle')}
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
+    <div class="grid gap-8 lg:grid-cols-5 lg:gap-12">
+      <!-- 联系方式 -->
+      <div class="lg:col-span-2">
+        <h2 class="font-display text-xl font-bold text-dark-brown">
+          {t(locale, 'contactPage.teamTitle')}
+        </h2>
+        <p class="mt-2 text-sm text-stone">
+          {t(locale, 'contactPage.teamDesc')}
+        </p>
+
+        <div class="mt-6 space-y-3">
+          <!-- WhatsApp -->
+          <a
+            href={waLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-4 rounded-3xl border border-milk-tea/50 bg-white/70 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-hover"
+          >
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 text-green-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.041z"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'contactPage.whatsappFastest')}</p>
+              <p class="font-semibold text-dark-brown">{CONTACT.whatsappDisplay}</p>
+            </div>
+          </a>
+
+          <!-- Email -->
+          <a
+            href={`mailto:${CONTACT.email}`}
+            class="flex items-center gap-4 rounded-3xl border border-milk-tea/50 bg-white/70 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-hover"
+          >
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-olive/10 text-olive">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'contact.email')}</p>
+              <p class="font-semibold text-dark-brown">{CONTACT.email}</p>
+            </div>
+          </a>
+
+          <!-- Address -->
+          <div class="flex items-center gap-4 rounded-3xl border border-milk-tea/50 bg-white/70 p-5 shadow-card">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-caramel/10 text-caramel">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'contact.address')}</p>
+              <p class="font-semibold text-dark-brown">{CONTACT.address}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-3xl border border-dashed border-milk-tea bg-milk-tea/20 p-5">
+          <p class="text-sm font-semibold text-dark-brown">{t(locale, 'contactPage.businessHours')}</p>
+          <p class="mt-1 text-xs text-stone">{t(locale, 'contactPage.hours')}</p>
+          <p class="mt-1 text-xs text-stone">{t(locale, 'contactPage.hoursReply')}</p>
+        </div>
+      </div>
+
+      <!-- 询盘表单 -->
+      <div class="lg:col-span-3">
+        <div class="rounded-[2rem] border border-milk-tea/50 bg-white/70 p-6 shadow-card md:p-8">
+          <h2 class="font-display text-xl font-bold text-dark-brown">
+            {t(locale, 'contactPage.formTitle')}
+          </h2>
+          <p class="mt-1 text-sm text-stone">
+            {t(locale, 'contactPage.formDesc')}
+          </p>
+          <div class="mt-6">
+            <InquiryForm locale={locale} />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

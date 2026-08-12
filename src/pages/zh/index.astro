@@ -1,0 +1,306 @@
+---
+// 首页：Hero + 品牌理念 + 品类导航 + 精选产品 + 优势 + 评价 + CTA
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import { getCategoriesWithCounts, getFeaturedProducts } from '../../lib/products';
+import { CONTACT } from '../../consts';
+import { t, getLocalePath, getCategoryName, type Locale } from '../../i18n/utils';
+
+const locale: Locale = 'zh';
+const basePath = getLocalePath(locale);
+
+const cats = getCategoriesWithCounts();
+const featured = getFeaturedProducts(2);
+
+const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
+  t(locale, 'whatsapp.quoteMsg'),
+)}`;
+
+// 优势列表
+const advantages = [
+  {
+    title: 'OEM / ODM',
+    desc: '全方位定制服务——材质、颜色、Logo、包装及产品设计，为您的品牌量身打造。',
+    icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+  },
+  {
+    title: '品质管控',
+    desc: '每道工序严格质检——来料、生产中、出货前全检，确保品质一致。',
+    icon: 'M9 12l2 2 4-4M21 12c0 5-3.5 7.5-8.5 9.5C7.5 19.5 4 17 4 12V6l8.5-3.5L21 6v6z',
+  },
+  {
+    title: '环保材质',
+    desc: 'RPET 再生面料与耐用尼龙——以自然为本的山谷系列设计。',
+    icon: 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z M2 21c0-3 1.85-5.36 5.08-6',
+  },
+  {
+    title: '全球物流',
+    desc: '可靠的全球海运与灵活条款。经验丰富的出口团队全程负责单证。',
+    icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10',
+  },
+];
+
+// 客户评价
+const testimonials = [
+  {
+    quote:
+      'HiDREAM 外出包成了我们的畅销款。品质和山谷系列配色非常出众。',
+    name: 'Sarah K.',
+    role: '宠物零售采购 · 德国',
+  },
+  {
+    quote:
+      'OEM 流程顺畅——从打样到大货全程负责。交期可靠。',
+    name: 'David L.',
+    role: '品牌方 · 美国',
+  },
+  {
+    quote:
+      '5 大系列品类丰富。一站式采购我们的出行产品线。',
+    name: 'Marie T.',
+    role: '经销商 · 法国',
+  },
+];
+---
+
+<Layout locale="zh">
+  <Hero locale={locale} />
+
+  <!-- 品牌理念 - 山谷系列设计故事 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="relative">
+        <div class="overflow-hidden rounded-[2rem] shadow-soft">
+          {cats[3]?.cover ? (
+            <Image
+              src={cats[3].cover}
+              alt={t(locale, 'hero.badgeValley')}
+              width={720}
+              height={560}
+              loading="lazy"
+              class="h-full w-full object-cover"
+              format="webp"
+              quality={85}
+            />
+          ) : (
+            <div class="flex h-full w-full items-center justify-center bg-milk-tea/30 text-stone/40">
+              <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            </div>
+          )}
+        </div>
+        <!-- 装饰叶子 -->
+        <svg class="absolute -left-6 -top-6 h-20 w-20 text-olive/20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+        </svg>
+      </div>
+
+      <div>
+        <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+          {t(locale, 'hero.badgeValley')}
+        </span>
+        <h2 class="mt-3 font-display text-3xl font-bold leading-tight text-dark-brown md:text-4xl">
+          {t(locale, 'index.valleyTitle')}
+        </h2>
+        <p class="mt-5 text-base leading-relaxed text-stone">
+          {t(locale, 'index.valleyP1')}
+        </p>
+        <p class="mt-3 text-base leading-relaxed text-stone">
+          {t(locale, 'index.valleyP2')}
+        </p>
+
+        <div class="mt-7 grid grid-cols-2 gap-4">
+          <div class="rounded-2xl border border-milk-tea/60 bg-white/60 p-4">
+            <p class="font-display text-2xl font-bold text-olive">4</p>
+            <p class="mt-1 text-xs text-stone">{t(locale, 'index.softTones')}</p>
+          </div>
+          <div class="rounded-2xl border border-milk-tea/60 bg-white/60 p-4">
+            <p class="font-display text-2xl font-bold text-olive">RPET</p>
+            <p class="mt-1 text-xs text-stone">{t(locale, 'index.ecoFabric')}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 产品系列导航 - 5大品类卡片 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
+    <div class="flex flex-col items-center text-center">
+      <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+        {t(locale, 'index.collectionsBadge')}
+      </span>
+      <h2 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl">
+        {t(locale, 'index.collectionsTitle')}
+      </h2>
+      <p class="mt-3 max-w-2xl text-stone">
+        {t(locale, 'categories.subtitle')}
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        cats.map((c, i) => (
+          <a
+            href={`${basePath}/products/${c.slug}`}
+            class={`group relative overflow-hidden rounded-3xl shadow-card transition-all duration-300 hover:shadow-hover ${
+              i === 0 ? 'sm:col-span-2 lg:col-span-1' : ''
+            }`}
+          >
+            <div class="aspect-[4/3] overflow-hidden bg-milk-tea/30">
+              {c.cover ? (
+                <Image
+                  src={c.cover}
+                  alt={getCategoryName(locale, c.slug)}
+                  width={640}
+                  height={480}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  format="webp"
+                  quality={80}
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center text-stone/40">
+                  <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                </div>
+              )}
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-brown/80 via-dark-brown/20 to-transparent" />
+            <div class="absolute bottom-0 left-0 right-0 p-5">
+              <div class="flex items-end justify-between">
+                <div>
+                  <p class="text-xs font-medium text-cream/80">{c.tagline}</p>
+                  <h3 class="mt-1 font-display text-xl font-bold text-cream">{getCategoryName(locale, c.slug)}</h3>
+                  <p class="mt-0.5 text-xs text-cream/70">{c.name} · {c.count} {t(locale, 'index.itemsUnit')}</p>
+                </div>
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cream/90 text-olive-dark transition-transform group-hover:translate-x-1">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </span>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 精选产品展示 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
+    <div class="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+      <div>
+        <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+          {t(locale, 'index.featuredBadge')}
+        </span>
+        <h2 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl">
+          {t(locale, 'featured.title')}
+        </h2>
+      </div>
+      <a href={`${basePath}/products`} class="inline-flex items-center gap-1.5 text-sm font-semibold text-olive-dark transition-colors hover:text-caramel">
+        {t(locale, 'index.viewAllProducts')}
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+    <div class="mt-10">
+      <ProductGrid products={featured} eager={true} locale={locale} />
+    </div>
+  </section>
+
+  <!-- 为什么选择我们 -->
+  <section class="bg-milk-tea/30 py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-4 md:px-8">
+      <div class="flex flex-col items-center text-center">
+        <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+          {t(locale, 'index.whyBadge')}
+        </span>
+        <h2 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl">
+          {t(locale, 'index.whyTitle')}
+        </h2>
+      </div>
+
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          advantages.map((a) => (
+            <div class="rounded-3xl border border-milk-tea/50 bg-cream/70 p-6 shadow-card transition-all hover:-translate-y-1 hover:shadow-hover">
+              <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-olive/10 text-olive">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d={a.icon} />
+                </svg>
+              </span>
+              <h3 class="mt-4 font-display text-lg font-semibold text-dark-brown">{a.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone">{a.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 客户评价 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+    <div class="flex flex-col items-center text-center">
+      <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+        {t(locale, 'index.trustedBadge')}
+      </span>
+      <h2 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl">
+        {t(locale, 'index.trustedTitle')}
+      </h2>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {
+        testimonials.map((tm) => (
+          <figure class="flex flex-col rounded-3xl border border-milk-tea/50 bg-white/70 p-7 shadow-card">
+            <div class="flex gap-1 text-caramel" aria-hidden="true">
+              {Array.from({ length: 5 }).map(() => (
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ))}
+            </div>
+            <blockquote class="mt-4 flex-1 text-sm leading-relaxed text-dark-brown">
+              "{tm.quote}"
+            </blockquote>
+            <figcaption class="mt-5 border-t border-milk-tea/60 pt-4">
+              <p class="font-semibold text-dark-brown">{tm.name}</p>
+              <p class="text-xs text-stone">{tm.role}</p>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- CTA 询价 -->
+  <section class="mx-auto max-w-7xl px-4 pb-8 md:px-8">
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-olive px-6 py-14 text-center shadow-soft md:px-12 md:py-20">
+      <!-- 装饰 -->
+      <div class="pointer-events-none absolute inset-0">
+        <svg class="absolute -left-8 -top-8 h-40 w-40 text-cream/10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
+        <svg class="absolute -bottom-10 -right-6 h-48 w-48 text-cream/10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
+      </div>
+      <div class="relative">
+        <h2 class="font-display text-3xl font-bold text-cream md:text-4xl lg:text-5xl">
+          {t(locale, 'index.ctaTitle')}
+        </h2>
+        <p class="mx-auto mt-4 max-w-2xl text-cream/80">
+          {t(locale, 'index.ctaDesc')}
+        </p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={quoteLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full bg-green-500 px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-green-600"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.041z"/></svg>
+            {t(locale, 'action.chatWhatsapp')}
+          </a>
+          <a
+            href={`${basePath}/contact`}
+            class="inline-flex items-center gap-2 rounded-full border border-cream/40 bg-cream/10 px-7 py-3.5 text-sm font-semibold text-cream transition-all hover:bg-cream/20"
+          >
+            {t(locale, 'action.send')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

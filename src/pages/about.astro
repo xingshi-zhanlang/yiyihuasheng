@@ -1,0 +1,202 @@
+---
+// 关于我们：品牌故事、工厂、证书、设计理念
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import { getCategoriesWithCounts } from '../lib/products';
+import { CONTACT } from '../consts';
+import { t, getLocalePath, type Locale } from '../i18n/utils';
+
+const locale: Locale = 'en';
+const basePath = getLocalePath(locale);
+
+const cats = getCategoriesWithCounts();
+const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
+  t(locale, 'whatsapp.quoteMsg'),
+)}`;
+
+// 时间线
+const milestones = [
+  { year: 'Origin', title: 'Born in the valley', desc: 'HiDREAM® 宠生几何 started with a simple belief — pets and humans travel better together, in harmony with nature.' },
+  { year: 'Design', title: 'Valley & Bobo series', desc: 'Two signature design languages: the calm natural Valley Series (RPET) and the playful Bobo Series.' },
+  { year: 'Today', title: '113+ SKUs, 5 lines', desc: 'A full catalog spanning carriers, cat products, dog travel and functional gear — serving B2B partners worldwide.' },
+];
+
+// 证书 / 能力
+const capabilities = [
+  { title: 'ISO-aligned Production', desc: 'Standardized manufacturing processes with documented quality controls.' },
+  { title: 'Material Testing', desc: 'Fabric strength, hardware load and colorfastness tested before bulk.' },
+  { title: 'RPET & Eco Materials', desc: 'Verified recycled fabrics meeting global sustainability standards.' },
+  { title: 'Export Experience', desc: 'Documents, labeling and logistics handled by a dedicated export team.' },
+];
+---
+
+<Layout
+  locale="en"
+  title="About HiDREAM® — Pet Travel Gear Design Brand | OEM/ODM"
+  description="HiDREAM® 宠生几何 is a pet travel gear design brand inspired by the valley. Learn our story, design philosophy, factory capabilities and certifications."
+>
+  <!-- Hero -->
+  <section class="relative overflow-hidden border-b border-milk-tea/60 bg-milk-tea/20">
+    <div class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+      <div class="max-w-3xl">
+        <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+          About Us
+        </span>
+        <h1 class="mt-3 font-display text-4xl font-bold leading-tight text-dark-brown md:text-5xl lg:text-6xl">
+          Designing journeys for pets & humans
+        </h1>
+        <p class="mt-3 font-rounded text-lg text-olive">HiDREAM® 宠生几何</p>
+        <p class="mt-5 text-base leading-relaxed text-stone md:text-lg">
+          We are a pet travel gear design brand. From the calm of the valley to
+          the rhythm of everyday life, we craft carriers, harnesses and
+          essentials that make every outing a gentle embrace of nature.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 品牌故事 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="relative overflow-hidden rounded-[2rem] shadow-soft">
+        {cats[0]?.cover ? (
+          <Image
+            src={cats[0].cover}
+            alt="HiDREAM brand"
+            width={720}
+            height={560}
+            loading="lazy"
+            class="h-full w-full object-cover"
+            format="webp"
+            quality={85}
+          />
+        ) : (
+          <div class="flex aspect-[4/3] w-full items-center justify-center bg-milk-tea/30 text-stone/40">
+            <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          </div>
+        )}
+      </div>
+      <div>
+        <h2 class="font-display text-3xl font-bold text-dark-brown md:text-4xl">
+          {t(locale, 'about.storyTitle')}
+        </h2>
+        <p class="mt-5 text-base leading-relaxed text-stone">
+          HiDREAM® 宠生几何 draws inspiration from the valley — its tranquility,
+          its ecological cycle, the growth of plants and the rhythm of life. We
+          translate this into soft natural tones, eco-friendly RPET and nylon,
+          and forms shaped around the way pets actually move and rest.
+        </p>
+        <p class="mt-3 text-base leading-relaxed text-stone">
+          We believe the best travel gear disappears into the journey —
+          comfortable for the pet, effortless for the human, and kind to the
+          planet we share.
+        </p>
+
+        <div class="mt-7 grid grid-cols-3 gap-4">
+          <div class="rounded-2xl bg-milk-tea/30 p-4 text-center">
+            <p class="font-display text-2xl font-bold text-olive">113+</p>
+            <p class="mt-1 text-xs text-stone">SKUs</p>
+          </div>
+          <div class="rounded-2xl bg-milk-tea/30 p-4 text-center">
+            <p class="font-display text-2xl font-bold text-olive">5</p>
+            <p class="mt-1 text-xs text-stone">Collections</p>
+          </div>
+          <div class="rounded-2xl bg-milk-tea/30 p-4 text-center">
+            <p class="font-display text-2xl font-bold text-olive">2</p>
+            <p class="mt-1 text-xs text-stone">Design series</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="bg-milk-tea/30 py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-4 md:px-8">
+      <h2 class="text-center font-display text-3xl font-bold text-dark-brown md:text-4xl">
+        {t(locale, 'about.milestonesTitle')}
+      </h2>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          milestones.map((m) => (
+            <div class="rounded-3xl border border-milk-tea/50 bg-cream/70 p-7 shadow-card">
+              <span class="font-rounded text-sm font-semibold uppercase tracking-wide text-caramel">{m.year}</span>
+              <h3 class="mt-2 font-display text-xl font-semibold text-dark-brown">{m.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-stone">{m.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 设计系列 -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="overflow-hidden rounded-3xl border border-milk-tea/50 bg-white/60 p-8 shadow-card">
+        <span class="inline-flex items-center gap-2 rounded-full bg-olive/10 px-3 py-1 text-xs font-semibold text-olive-dark">
+          Valley Series
+        </span>
+        <h3 class="mt-4 font-display text-2xl font-bold text-dark-brown">山谷系列</h3>
+        <p class="mt-3 text-sm leading-relaxed text-stone">
+          Four soft natural tones meet RPET recycled fabric and durable nylon.
+          Designed around pet anatomy for relaxed, secure travel — a deep
+          embrace of nature in every journey.
+        </p>
+      </div>
+      <div class="overflow-hidden rounded-3xl border border-milk-tea/50 bg-white/60 p-8 shadow-card">
+        <span class="inline-flex items-center gap-2 rounded-full bg-caramel/15 px-3 py-1 text-xs font-semibold text-caramel">
+          Bobo Series
+        </span>
+        <h3 class="mt-4 font-display text-2xl font-bold text-dark-brown">啵啵系列</h3>
+        <p class="mt-3 text-sm leading-relaxed text-stone">
+          A playful, characterful line combining leather accents with
+          high-density nylon. Built for energetic dogs and owners who love bold
+          color and reliable hardware.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 工厂能力 / 证书 -->
+  <section class="bg-milk-tea/30 py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-4 md:px-8">
+      <div class="text-center">
+        <span class="font-rounded text-sm font-semibold uppercase tracking-[0.2em] text-caramel">
+          Factory & Quality
+        </span>
+        <h2 class="mt-3 font-display text-3xl font-bold text-dark-brown md:text-4xl">
+          Capabilities & certifications
+        </h2>
+      </div>
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          capabilities.map((c) => (
+            <div class="rounded-3xl border border-milk-tea/50 bg-cream/70 p-6 shadow-card">
+              <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-olive/10 text-olive">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 12l2 2 4-4M21 12c0 5-3.5 7.5-8.5 9.5C7.5 19.5 4 17 4 12V6l8.5-3.5L21 6v6z"/></svg>
+              </span>
+              <h3 class="mt-4 font-display text-base font-semibold text-dark-brown">{c.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone">{c.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-8">
+    <div class="rounded-[2.5rem] bg-olive px-6 py-12 text-center shadow-soft md:px-12">
+      <h2 class="font-display text-2xl font-bold text-cream md:text-3xl">
+        Let's build your pet collection together
+      </h2>
+      <p class="mx-auto mt-3 max-w-xl text-cream/80">
+        OEM/ODM, custom materials, private label — talk to our team today.
+      </p>
+      <a href={quoteLink} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center gap-2 rounded-full bg-cream px-7 py-3.5 text-sm font-semibold text-olive-dark transition-all hover:bg-milk-tea">
+        Chat on WhatsApp
+      </a>
+    </div>
+  </section>
+</Layout>

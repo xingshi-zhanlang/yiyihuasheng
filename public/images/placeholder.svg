@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800">
+  <rect width="640" height="800" fill="#E8D5C4"/>
+  <g fill="none" stroke="#8B7D6B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+    <path d="M320 560a140 140 0 0 1-23-278c115-18 146-29 178-66 16 41 32 84 32 160 0 86-76 184-187 184Z"/>
+    <path d="M170 620c0-59 38-107 100-120"/>
+  </g>
+  <text x="320" y="420" font-family="serif" font-size="36" fill="#8B7D6B" text-anchor="middle" opacity="0.7">HiDREAM</text>
+</svg>

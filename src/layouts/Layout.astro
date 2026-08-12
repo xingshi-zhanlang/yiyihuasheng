@@ -1,0 +1,81 @@
+---
+// 根布局：SEO meta、字体、全局样式、Header/Footer/WhatsApp
+// 支持 i18n：通过 locale prop 设置语言、hreflang、翻译
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { SITE } from '../consts';
+import { getLocaleFromUrl, getHtmlLang, t, type Locale } from '../i18n/utils';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: Locale;
+}
+
+const { title, description, locale } = Astro.props;
+const currentLocale: Locale = locale || getLocaleFromUrl(Astro.url);
+const htmlLang = getHtmlLang(currentLocale);
+
+// 翻译的标题和描述
+const pageTitle = title || t(currentLocale, 'nav.home') + ' · ' + SITE.brand;
+const pageDescription = description || SITE.description;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
+
+// 生成 hreflang 标签
+const pathWithoutLocale = Astro.url.pathname.replace(/^\/zh(\/|$)/, '/').replace(/^\/zh$/, '/');
+const enUrl = new URL(pathWithoutLocale === '/' ? '/' : pathWithoutLocale, Astro.site ?? SITE.url);
+const zhUrl = new URL('/zh' + (pathWithoutLocale === '/' ? '' : pathWithoutLocale), Astro.site ?? SITE.url);
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- hreflang 标签 -->
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(SITE.defaultOgImage, Astro.site ?? SITE.url)} />
+    <meta property="og:site_name" content={SITE.brand} />
+    <meta property="og:locale" content={currentLocale === 'zh' ? 'zh_CN' : 'en_US'} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <!-- 图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Header locale={currentLocale} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer locale={currentLocale} />
+    <WhatsAppButton locale={currentLocale} />
+  </body>
+</html>

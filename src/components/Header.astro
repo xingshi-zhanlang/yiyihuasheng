@@ -1,0 +1,158 @@
+---
+// 顶部导航栏：Logo + 导航 + 语言切换 + 获取报价按钮
+import { CONTACT, SITE } from '../consts';
+import { t, getLocalePath, getSwitchPath, type Locale } from '../i18n/utils';
+
+interface Props {
+  locale?: Locale;
+}
+const locale: Locale = Astro.props.locale || 'en';
+
+const basePath = getLocalePath(locale);
+const path = Astro.url.pathname;
+
+// 判断当前导航高亮
+const isActive = (href: string) => {
+  const fullPath = href === '/' ? basePath + '/' : basePath + href;
+  if (href === '/') return path === basePath + '/' || (basePath === '' && path === '/');
+  return path.startsWith(basePath + href);
+};
+
+const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
+  t(locale, 'whatsapp.quoteMsg'),
+)}`;
+
+// 语言切换链接
+const switchLocale: Locale = locale === 'en' ? 'zh' : 'en';
+const switchPath = getSwitchPath(path, switchLocale);
+const switchLabel = locale === 'en' ? '中文' : 'EN';
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-milk-tea/60 bg-cream/85 backdrop-blur-md"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-4">
+    <!-- Logo -->
+    <a href={basePath + '/'} class="flex items-center gap-2.5" aria-label={SITE.brand}>
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-2xl bg-olive text-cream shadow-soft"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6"></path>
+        </svg>
+      </span>
+      <span class="flex flex-col leading-none">
+        <span class="font-display text-lg font-bold text-dark-brown md:text-xl">
+          HiDREAM
+        </span>
+        <span class="text-[11px] tracking-[0.18em] text-stone">宠生几何</span>
+      </span>
+    </a>
+
+    <!-- 桌面端导航 -->
+    <nav class="hidden items-center gap-1 lg:flex">
+      <a href={basePath + '/'} class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${isActive('/') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40 hover:text-dark-brown'}`}>
+        {t(locale, 'nav.home')}
+      </a>
+      <a href={basePath + '/products'} class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${isActive('/products') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40 hover:text-dark-brown'}`}>
+        {t(locale, 'nav.products')}
+      </a>
+      <a href={basePath + '/about'} class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${isActive('/about') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40 hover:text-dark-brown'}`}>
+        {t(locale, 'nav.about')}
+      </a>
+      <a href={basePath + '/blog'} class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${isActive('/blog') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40 hover:text-dark-brown'}`}>
+        {t(locale, 'nav.blog')}
+      </a>
+      <a href={basePath + '/contact'} class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${isActive('/contact') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40 hover:text-dark-brown'}`}>
+        {t(locale, 'nav.contact')}
+      </a>
+    </nav>
+
+    <!-- 右侧操作区 -->
+    <div class="flex items-center gap-2 md:gap-3">
+      <!-- 语言切换 -->
+      <a
+        href={switchPath}
+        class="flex items-center gap-1 rounded-full border border-milk-tea px-3 py-1.5 text-xs font-medium text-stone transition-colors hover:border-olive hover:text-olive-dark"
+        aria-label="Switch language"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        {switchLabel}
+      </a>
+
+      <!-- 获取报价按钮 -->
+      <a
+        href={quoteLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden items-center gap-2 rounded-full bg-caramel px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-olive hover:shadow-hover md:inline-flex"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        {t(locale, 'action.getQuote')}
+      </a>
+
+      <!-- 移动端菜单按钮 -->
+      <button
+        type="button"
+        id="menu-toggle"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-milk-tea text-dark-brown lg:hidden"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端菜单 -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t border-milk-tea/60 bg-cream/95 backdrop-blur-md lg:hidden"
+  >
+    <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
+      <a href={basePath + '/'} class={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive('/') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40'}`}>
+        {t(locale, 'nav.home')}
+      </a>
+      <a href={basePath + '/products'} class={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive('/products') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40'}`}>
+        {t(locale, 'nav.products')}
+      </a>
+      <a href={basePath + '/about'} class={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive('/about') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40'}`}>
+        {t(locale, 'nav.about')}
+      </a>
+      <a href={basePath + '/blog'} class={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive('/blog') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40'}`}>
+        {t(locale, 'nav.blog')}
+      </a>
+      <a href={basePath + '/contact'} class={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive('/contact') ? 'bg-olive/10 text-olive-dark' : 'text-stone hover:bg-milk-tea/40'}`}>
+        {t(locale, 'nav.contact')}
+      </a>
+      <a
+        href={quoteLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl bg-caramel px-5 py-3 text-sm font-semibold text-white shadow-soft"
+      >
+        {t(locale, 'action.getQuote')}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    menu?.classList.toggle('hidden');
+  });
+</script>
