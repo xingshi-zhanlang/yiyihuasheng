@@ -2,7 +2,7 @@ export interface ProductVariant {
   sku?: string;
   color?: string;
   size?: string;
-  specs?: Record<string, string>;
+  specs?: string;
 }
 
 export interface ProductContent {
