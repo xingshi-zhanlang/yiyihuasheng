@@ -1,0 +1,254 @@
+---
+// 全站询盘购物车：localStorage 持久化，最终通过 WhatsApp 发送商品清单。
+import { CONTACT } from '../consts';
+import type { Locale } from '../i18n/utils';
+
+interface Props {
+  locale?: Locale;
+}
+
+const locale: Locale = Astro.props.locale || 'en';
+const isZh = locale === 'zh';
+---
+
+<div id="inquiry-cart-root" data-whatsapp={CONTACT.whatsapp} data-locale={locale}>
+  <button
+    id="inquiry-cart-trigger"
+    type="button"
+    class="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-dark-brown text-cream shadow-hover transition-transform hover:-translate-y-1"
+    aria-label={isZh ? '打开询盘购物车' : 'Open inquiry cart'}
+    aria-expanded="false"
+  >
+    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="9" cy="20" r="1" />
+      <circle cx="18" cy="20" r="1" />
+      <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6" />
+    </svg>
+    <span id="inquiry-cart-count" class="absolute -right-1 -top-1 hidden min-w-6 rounded-full bg-caramel px-1.5 py-0.5 text-center text-[11px] font-bold text-white">0</span>
+  </button>
+
+  <div id="inquiry-cart-backdrop" class="pointer-events-none fixed inset-0 z-50 bg-black/30 opacity-0 transition-opacity duration-200" aria-hidden="true"></div>
+
+  <aside
+    id="inquiry-cart-drawer"
+    class="fixed right-0 top-0 z-[60] flex h-full w-full max-w-md translate-x-full flex-col bg-cream shadow-2xl transition-transform duration-300"
+    aria-hidden="true"
+  >
+    <div class="flex items-center justify-between border-b border-milk-tea/60 px-5 py-4 md:px-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-caramel">{isZh ? '询盘清单' : 'Inquiry cart'}</p>
+        <h2 class="mt-1 font-display text-xl font-bold text-dark-brown">{isZh ? '准备好，让我们聊聊' : 'Ready when you are'}</h2>
+      </div>
+      <button id="inquiry-cart-close" type="button" class="flex h-10 w-10 items-center justify-center rounded-full border border-milk-tea text-stone hover:text-dark-brown" aria-label={isZh ? '关闭' : 'Close'}>
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div id="inquiry-cart-items" class="flex-1 overflow-y-auto px-5 py-5 md:px-6"></div>
+
+    <div class="border-t border-milk-tea/60 bg-white/60 px-5 py-5 md:px-6">
+      <label class="block text-xs font-semibold uppercase tracking-wide text-stone" for="inquiry-country">
+        {isZh ? '国家 / 地区' : 'Country / region'}
+      </label>
+      <input id="inquiry-country" class="mt-2 w-full rounded-2xl border border-milk-tea bg-cream px-4 py-3 text-sm text-dark-brown outline-none transition focus:border-olive" placeholder={isZh ? '例如：德国 / 美国 / 新加坡' : 'e.g. Germany / USA / Singapore'} />
+
+      <label class="mt-4 block text-xs font-semibold uppercase tracking-wide text-stone" for="inquiry-note">
+        {isZh ? '备注' : 'Message'}
+      </label>
+      <textarea id="inquiry-note" rows="3" class="mt-2 w-full resize-none rounded-2xl border border-milk-tea bg-cream px-4 py-3 text-sm text-dark-brown outline-none transition focus:border-olive" placeholder={isZh ? '数量、定制、包装、运输等要求……' : 'Quantity, OEM/ODM, packaging, shipping requirements…'}></textarea>
+
+      <button id="inquiry-whatsapp" type="button" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-olive px-5 py-3.5 text-sm font-semibold text-cream shadow-soft transition-all hover:bg-olive-dark hover:shadow-hover">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.9 11.9 0 0 0 12.05 0C5.48 0 .16 5.31.16 11.87c0 2.09.55 4.13 1.59 5.92L.06 24l6.35-1.66a11.88 11.88 0 0 0 5.64 1.43h.01c6.56 0 11.88-5.32 11.88-11.89A11.84 11.84 0 0 0 20.5 3.5Zm-8.45 18.1h-.01a9.79 9.79 0 0 1-5-1.36l-.36-.21-3.77.98 1.01-3.68-.24-.38a9.87 9.87 0 1 1 8.37 4.65Zm5.42-7.39c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.39-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.08.15.2 2.09 3.2 5.07 4.49.71.31 1.27.49 1.7.63.71.23 1.35.19 1.87.12.57-.08 1.77-.72 2.02-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35Z"/></svg>
+        {isZh ? '通过 WhatsApp 发送询盘' : 'Send inquiry via WhatsApp'}
+      </button>
+      <button id="inquiry-clear" type="button" class="mt-2 w-full rounded-2xl px-4 py-2 text-xs font-medium text-stone hover:text-dark-brown">
+        {isZh ? '清空清单' : 'Clear inquiry'}
+      </button>
+      <p class="mt-1 text-center text-[11px] leading-relaxed text-stone">
+        {isZh ? '不在线付款。我们将在 WhatsApp 中确认报价、MOQ、运输和定制细节。' : 'No online payment. We will confirm pricing, MOQ, shipping and customization in WhatsApp.'}
+      </p>
+    </div>
+  </aside>
+</div>
+
+<script>
+  type InquiryItem = { id: string; name: string; sku: string; url: string; qty: number };
+
+  const root = document.getElementById('inquiry-cart-root');
+  const trigger = document.getElementById('inquiry-cart-trigger');
+  const drawer = document.getElementById('inquiry-cart-drawer');
+  const backdrop = document.getElementById('inquiry-cart-backdrop');
+  const close = document.getElementById('inquiry-cart-close');
+  const itemsEl = document.getElementById('inquiry-cart-items');
+  const countEl = document.getElementById('inquiry-cart-count');
+  const whatsapp = document.getElementById('inquiry-whatsapp');
+  const clear = document.getElementById('inquiry-clear');
+  const country = document.getElementById('inquiry-country') as HTMLInputElement | null;
+  const note = document.getElementById('inquiry-note') as HTMLTextAreaElement | null;
+
+  const locale = root?.getAttribute('data-locale') === 'zh' ? 'zh' : 'en';
+  const whatsappNumber = root?.getAttribute('data-whatsapp') || '';
+  const storageKey = 'hidream-inquiry-cart-v1';
+  let items: InquiryItem[] = [];
+
+  const load = () => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      items = raw ? JSON.parse(raw) : [];
+    } catch {
+      items = [];
+    }
+  };
+
+  const save = () => localStorage.setItem(storageKey, JSON.stringify(items));
+
+  const open = () => {
+    drawer?.classList.remove('translate-x-full');
+    drawer?.setAttribute('aria-hidden', 'false');
+    backdrop?.classList.remove('pointer-events-none', 'opacity-0');
+    trigger?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const hide = () => {
+    drawer?.classList.add('translate-x-full');
+    drawer?.setAttribute('aria-hidden', 'true');
+    backdrop?.classList.add('pointer-events-none', 'opacity-0');
+    trigger?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  const render = () => {
+    if (!itemsEl || !countEl) return;
+    const total = items.reduce((sum, item) => sum + item.qty, 0);
+    countEl.textContent = String(total);
+    countEl.classList.toggle('hidden', total === 0);
+
+    if (items.length === 0) {
+      itemsEl.innerHTML = `
+        <div class="flex min-h-[280px] flex-col items-center justify-center rounded-3xl border border-dashed border-milk-tea bg-white/50 px-6 text-center">
+          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-olive/10 text-olive">
+            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 7h12l-1 12H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+          </div>
+          <p class="mt-4 font-medium text-dark-brown">${locale === 'zh' ? '还没有加入产品' : 'Your inquiry list is empty'}</p>
+          <p class="mt-2 max-w-xs text-sm leading-relaxed text-stone">${locale === 'zh' ? '浏览产品后点击“加入询盘”，我们会把商品名称、SKU、链接和数量一起带到 WhatsApp。' : 'Browse the catalog and add products. Names, SKUs, links and quantities will travel with your WhatsApp inquiry.'}</p>
+        </div>`;
+      return;
+    }
+
+    itemsEl.innerHTML = items.map((item) => `
+      <div class="rounded-2xl border border-milk-tea/60 bg-white/70 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="font-medium leading-snug text-dark-brown">${escapeHtml(item.name)}</p>
+            <p class="mt-1 font-mono text-[11px] text-stone">${escapeHtml(item.sku)}</p>
+          </div>
+          <button type="button" data-remove="${escapeHtml(item.id)}" class="shrink-0 text-xs font-medium text-stone hover:text-caramel">${locale === 'zh' ? '移除' : 'Remove'}</button>
+        </div>
+        <div class="mt-3 flex items-center justify-between gap-3">
+          <a href="${item.url}" class="truncate text-xs text-olive-dark hover:underline">${locale === 'zh' ? '查看产品' : 'View product'} ↗</a>
+          <div class="inline-flex items-center rounded-full border border-milk-tea bg-cream">
+            <button type="button" data-minus="${escapeHtml(item.id)}" class="h-8 w-8 text-stone hover:text-dark-brown">−</button>
+            <span class="w-8 text-center text-xs font-semibold text-dark-brown">${item.qty}</span>
+            <button type="button" data-plus="${escapeHtml(item.id)}" class="h-8 w-8 text-stone hover:text-dark-brown">+</button>
+          </div>
+        </div>
+      </div>`).join('');
+  };
+
+  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char] || char);
+
+  const add = (item: InquiryItem) => {
+    const existing = items.find((entry) => entry.id === item.id);
+    if (existing) existing.qty += item.qty;
+    else items.push(item);
+    save();
+    render();
+    open();
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const addButton = target?.closest<HTMLElement>('[data-inquiry-add]');
+    if (addButton) {
+      event.preventDefault();
+      try {
+        add(JSON.parse(addButton.dataset.inquiryAdd || '{}'));
+      } catch {
+        return;
+      }
+      return;
+    }
+
+    const removeButton = target?.closest<HTMLElement>('[data-remove]');
+    const plusButton = target?.closest<HTMLElement>('[data-plus]');
+    const minusButton = target?.closest<HTMLElement>('[data-minus]');
+
+    if (removeButton) {
+      items = items.filter((item) => item.id !== removeButton.dataset.remove);
+      save();
+      render();
+      return;
+    }
+    if (plusButton) {
+      const item = items.find((entry) => entry.id === plusButton.dataset.plus);
+      if (item) item.qty += 1;
+      save();
+      render();
+      return;
+    }
+    if (minusButton) {
+      const item = items.find((entry) => entry.id === minusButton.dataset.minus);
+      if (!item) return;
+      item.qty -= 1;
+      if (item.qty <= 0) items = items.filter((entry) => entry.id !== item.id);
+      save();
+      render();
+    }
+  });
+
+  trigger?.addEventListener('click', open);
+  close?.addEventListener('click', hide);
+  backdrop?.addEventListener('click', hide);
+
+  clear?.addEventListener('click', () => {
+    items = [];
+    save();
+    render();
+  });
+
+  whatsapp?.addEventListener('click', () => {
+    if (!items.length) {
+      open();
+      return;
+    }
+    const lines = items.map((item, index) => `${index + 1}. ${item.name} × ${item.qty}\n   SKU: ${item.sku}\n   ${item.url}`);
+    const message = [
+      locale === 'zh' ? '你好，我想咨询以下产品：' : 'Hi, I’d like to inquire about the following products:',
+      '',
+      ...lines,
+      '',
+      `${locale === 'zh' ? '国家/地区' : 'Country / region'}: ${country?.value || ''}`,
+      `${locale === 'zh' ? '备注' : 'Message'}: ${note?.value || ''}`,
+      '',
+      locale === 'zh' ? '请提供报价、MOQ、运输方式和定制选项，谢谢。' : 'Please send your quotation, MOQ, shipping options and customization details. Thank you.',
+    ].join('\n');
+
+    const href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(href, '_blank', 'noopener,noreferrer');
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (event.key === storageKey) {
+      load();
+      render();
+    }
+  });
+
+  load();
+  render();
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') hide();
+  });
+</script>
