@@ -1,8 +1,9 @@
 ---
-// 首页 Hero：品牌 slogan + 主图 + 装饰元素
+// 首页 Hero：可通过 CMS 修改文案与两张主视觉图。
 import { Image } from 'astro:assets';
-import { SITE, CONTACT } from '../consts';
+import { CONTACT } from '../consts';
 import { getProductsByCategory } from '../lib/products';
+import siteHome from '../data/site-home.json';
 import { t, getLocalePath, type Locale } from '../i18n/utils';
 
 interface Props {
@@ -11,13 +12,12 @@ interface Props {
 const locale: Locale = Astro.props.locale || 'en';
 const basePath = getLocalePath(locale);
 
-const newArrivals = getProductsByCategory('new-arrivals').filter(
-  (p) => p.variants.length > 0,
-);
-const heroImage = newArrivals[0]?.image || null;
-const heroImage2 = newArrivals[1]?.image || heroImage;
-
+const newArrivals = getProductsByCategory('new-arrivals').filter((p) => p.variants.length > 0);
+const fallback1 = newArrivals[0]?.image || null;
+const fallback2 = newArrivals[1]?.image || fallback1;
 const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(t(locale, 'whatsapp.defaultMsg'))}`;
+const hero1 = siteHome.heroImage1 || fallback1;
+const hero2 = siteHome.heroImage2 || fallback2;
 ---
 
 <section class="relative overflow-hidden">
@@ -31,20 +31,20 @@ const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(t
     <div class="animate-fade-up">
       <span class="inline-flex items-center gap-2 rounded-full border border-olive/20 bg-olive/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-olive-dark">
         <span class="h-1.5 w-1.5 rounded-full bg-caramel"></span>
-        {t(locale, 'hero.badge')}
+        {locale === 'en' ? siteHome.heroBadge : t(locale, 'hero.badge')}
       </span>
 
       <h1 class="mt-5 font-display text-4xl font-bold leading-tight text-dark-brown md:text-5xl lg:text-6xl">
-        {t(locale, 'hero.title1')}<br />
-        <span class="text-olive">{t(locale, 'hero.title2')}</span>
+        {locale === 'en' ? siteHome.heroTitle : t(locale, 'hero.title1')}<br />
+        <span class="text-olive">{locale === 'en' ? siteHome.heroHighlight : t(locale, 'hero.title2')}</span>
       </h1>
 
       <p class="mt-3 font-rounded text-lg text-caramel md:text-xl">
-        {t(locale, 'hero.subtitle')}
+        {locale === 'en' ? siteHome.heroSubtitle : t(locale, 'hero.subtitle')}
       </p>
 
       <p class="mt-5 max-w-xl text-base leading-relaxed text-stone md:text-lg">
-        {t(locale, 'hero.description')}
+        {locale === 'en' ? siteHome.heroDescription : t(locale, 'hero.description')}
       </p>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -58,32 +58,27 @@ const quoteLink = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(t
       </div>
 
       <dl class="mt-10 grid grid-cols-3 gap-4 border-t border-milk-tea/60 pt-6">
-        <div>
-          <dt class="font-display text-2xl font-bold text-olive-dark">113+</dt>
-          <dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statSkus')}</dd>
-        </div>
-        <div>
-          <dt class="font-display text-2xl font-bold text-olive-dark">5</dt>
-          <dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statLines')}</dd>
-        </div>
-        <div>
-          <dt class="font-display text-2xl font-bold text-olive-dark">OEM/ODM</dt>
-          <dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statOem')}</dd>
-        </div>
+        <div><dt class="font-display text-2xl font-bold text-olive-dark">113+</dt><dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statSkus')}</dd></div>
+        <div><dt class="font-display text-2xl font-bold text-olive-dark">5</dt><dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statLines')}</dd></div>
+        <div><dt class="font-display text-2xl font-bold text-olive-dark">OEM/ODM</dt><dd class="mt-1 text-xs text-stone">{t(locale, 'hero.statOem')}</dd></div>
       </dl>
     </div>
 
     <div class="relative animate-fade-up [animation-delay:150ms]">
       <div class="relative grid grid-cols-2 gap-4">
         <div class="overflow-hidden rounded-3xl shadow-soft">
-          {heroImage && (
-            <Image src={heroImage} alt="HiDREAM pet carrier" width={560} height={700} class="h-full w-full object-cover" loading="eager" format="webp" quality={85} />
-          )}
+          {typeof hero1 === 'string' ? (
+            <img src={hero1} alt="HiDREAM pet carrier" width="560" height="700" class="h-full w-full object-cover" loading="eager" decoding="async" />
+          ) : hero1 ? (
+            <Image src={hero1} alt="HiDREAM pet carrier" width={560} height={700} class="h-full w-full object-cover" loading="eager" format="webp" quality={85} />
+          ) : null}
         </div>
         <div class="mt-10 overflow-hidden rounded-3xl shadow-soft">
-          {heroImage2 && (
-            <Image src={heroImage2} alt="HiDREAM pet product" width={560} height={700} class="h-full w-full object-cover" loading="eager" format="webp" quality={85} />
-          )}
+          {typeof hero2 === 'string' ? (
+            <img src={hero2} alt="HiDREAM pet product" width="560" height="700" class="h-full w-full object-cover" loading="eager" decoding="async" />
+          ) : hero2 ? (
+            <Image src={hero2} alt="HiDREAM pet product" width={560} height={700} class="h-full w-full object-cover" loading="eager" format="webp" quality={85} />
+          ) : null}
         </div>
       </div>
 
