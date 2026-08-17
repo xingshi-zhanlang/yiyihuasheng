@@ -9,6 +9,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "cf:dev": "astro build && wrangler dev",
+    "deploy": "astro build && wrangler deploy",
     "typecheck": "astro check",
     "astro": "astro",
     "emdash:types": "emdash types",
