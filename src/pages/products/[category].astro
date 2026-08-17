@@ -1,23 +1,19 @@
 ---
-// 品类列表页：按品类展示产品
+// 品类列表页：运行时从 EmDash D1 读取已发布产品
+export const prerender = false;
+
 import Layout from '../../layouts/Layout.astro';
 import CategoryNav from '../../components/CategoryNav.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
-import {
-  getProductsByCategory,
-  getValidCategorySlugs,
-} from '../../lib/products';
+import { getLiveProductsByCategory } from '../../lib/live-products';
 import { CATEGORIES } from '../../consts';
 import { t, getLocalePath, getCategoryName, type Locale } from '../../i18n/utils';
 
-// 静态生成所有品类页
-export function getStaticPaths() {
-  return getValidCategorySlugs().map((slug) => ({ params: { category: slug } }));
-}
-
 const { category } = Astro.params;
-const cat = CATEGORIES.find((c) => c.slug === category)!;
-const products = getProductsByCategory(category!).filter(
+const cat = CATEGORIES.find((c) => c.slug === category);
+if (!cat) return new Response(null, { status: 404 });
+
+const products = (await getLiveProductsByCategory(category!)).filter(
   (p) => p.variants.length > 0,
 );
 
@@ -31,7 +27,6 @@ const catName = getCategoryName(locale, cat.slug);
   title={`${catName} — ${cat.nameCn} | HiDREAM® Wholesale`}
   description={cat.description}
 >
-  <!-- 页头 -->
   <section class="border-b border-milk-tea/60 bg-milk-tea/20">
     <div class="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
       <nav class="text-xs text-stone" aria-label="Breadcrumb">
@@ -57,11 +52,16 @@ const catName = getCategoryName(locale, cat.slug);
   </section>
 
   <section class="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-14">
-    <!-- 品类导航 -->
     <div class="sticky top-[72px] z-30 -mx-4 mb-8 bg-cream/85 px-4 py-3 backdrop-blur md:mx-0 md:rounded-2xl md:px-4">
       <CategoryNav active={category} />
     </div>
 
-    <ProductGrid products={products} eager={true} locale={locale} />
+    {products.length > 0 ? (
+      <ProductGrid products={products} eager={true} locale={locale} />
+    ) : (
+      <div class="rounded-3xl border border-milk-tea/60 bg-white/40 px-6 py-16 text-center text-stone">
+        Products are being updated. Please contact us for the latest catalog.
+      </div>
+    )}
   </section>
 </Layout>

@@ -1,25 +1,24 @@
 ---
-// 产品总览页：展示所有品类 + 全部产品
+// 产品总览页：运行时从 EmDash D1 读取已发布产品
+export const prerender = false;
+
 import Layout from '../../layouts/Layout.astro';
 import CategoryNav from '../../components/CategoryNav.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
-import { allProducts, getCategoriesWithCounts } from '../../lib/products';
+import { getLiveProducts, getLiveCategoryCounts } from '../../lib/live-products';
 import { t, getLocalePath, type Locale } from '../../i18n/utils';
 
 const locale: Locale = 'en';
 const basePath = getLocalePath(locale);
-
-const cats = getCategoriesWithCounts();
-// 全部产品（有变体的）
-const products = allProducts.filter((p) => p.variants.length > 0);
+const cats = await getLiveCategoryCounts();
+const products = await getLiveProducts();
 ---
 
 <Layout
   locale="en"
   title={`All Products — HiDREAM® 宠生几何 | Pet Travel Gear Wholesale`}
-  description="Browse the full HiDREAM catalog — pet carriers, harnesses, leashes, travel gear and functional accessories. 113+ SKUs across 5 collections. Wholesale & OEM/ODM."
+  description="Browse the full HiDREAM catalog — pet carriers, harnesses, leashes, travel gear and functional accessories. Wholesale & OEM/ODM."
 >
-  <!-- 页头 -->
   <section class="border-b border-milk-tea/60 bg-milk-tea/20">
     <div class="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
       <nav class="text-xs text-stone" aria-label="Breadcrumb">
@@ -38,11 +37,9 @@ const products = allProducts.filter((p) => p.variants.length > 0);
   </section>
 
   <section class="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-14">
-    <!-- 品类导航 -->
     <div class="sticky top-[72px] z-30 -mx-4 mb-8 bg-cream/85 px-4 py-3 backdrop-blur md:mx-0 md:rounded-2xl md:px-4">
       <CategoryNav showAll={false} />
     </div>
-
     <ProductGrid products={products} eager={true} locale={locale} />
   </section>
 </Layout>
