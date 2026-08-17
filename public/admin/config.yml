@@ -11,6 +11,8 @@ site_url: https://hidream-pet.com
 logo_url: /favicon.svg
 locale: en
 
+# Phase 1 stores uploaded originals in Git so you do not need another storage service.
+# We can move this to Cloudflare R2 later without changing the CMS content model.
 media_folder: public/images/uploads
 public_folder: /images/uploads
 
@@ -49,12 +51,12 @@ collections:
       - { label: OEM / ODM, name: oem, widget: boolean, default: true }
       - { label: SEO Title, name: seoTitle, widget: string, required: false }
       - { label: SEO Description, name: seoDescription, widget: text, required: false }
-      - { label: Publish, name: draft, widget: boolean, default: false, hint: "Set true to hide this product from the public catalog." }
+      - { label: Hide Product, name: draft, widget: boolean, default: false, hint: "Enable to keep this product in CMS but hide it from the public catalog." }
 
   - name: pages
     label: Site Pages
     files:
-      - label: Homepage
+      - label: Homepage Hero
         name: homepage
         file: src/data/site-home.json
         fields:
@@ -65,11 +67,6 @@ collections:
           - { label: Hero Description, name: heroDescription, widget: text }
           - { label: Hero Image 1, name: heroImage1, widget: image, choose_url: false }
           - { label: Hero Image 2, name: heroImage2, widget: image, choose_url: false }
-          - { label: Brand Story Title, name: storyTitle, widget: string }
-          - { label: Brand Story Label, name: storyLabel, widget: string }
-          - { label: Brand Story Image, name: storyImage, widget: image, choose_url: false }
-          - { label: Brand Story Paragraph 1, name: storyParagraph1, widget: text }
-          - { label: Brand Story Paragraph 2, name: storyParagraph2, widget: text }
       - label: SEO / Brand Settings
         name: settings
         file: src/data/site-settings.json
