@@ -1,0 +1,7 @@
+# Local-only Cloudflare/EmDash secrets.
+# Never commit the real .dev.vars file.
+PUBLIC_SITE_URL=http://localhost:4321
+
+# Set these only when testing the real Cloudflare resources locally.
+# CLOUDFLARE_ACCOUNT_ID=
+# CLOUDFLARE_API_TOKEN=
