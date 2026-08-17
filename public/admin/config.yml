@@ -1,0 +1,99 @@
+backend:
+  name: github
+  repo: xingshi-zhanlang/yiyihuasheng
+  branch: main
+  base_url: https://hidream-pet.com
+  auth_endpoint: /auth
+  site_domain: hidream-pet.com
+
+publish_mode: simple
+site_url: https://hidream-pet.com
+logo_url: /favicon.svg
+locale: en
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: products
+    label: Products
+    label_singular: Product
+    description: "Create and maintain wholesale products, variants, SEO text and gallery images."
+    folder: src/content/products
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{name}} · {{sku}}"
+    fields:
+      - { label: Product Name, name: name, widget: string }
+      - { label: English Name, name: nameEn, widget: string }
+      - { label: SKU, name: sku, widget: string }
+      - { label: Category, name: category, widget: select, options: [new-arrivals, carrier-bags, cat-products, dog-travel, functional] }
+      - { label: Description, name: description, widget: text }
+      - { label: Main Image, name: image, widget: image, choose_url: false }
+      - label: Gallery
+        name: gallery
+        widget: list
+        field: { label: Image, name: image, widget: image, choose_url: false }
+      - label: Variants
+        name: variants
+        widget: list
+        collapsed: true
+        fields:
+          - { label: SKU, name: sku, widget: string }
+          - { label: Color, name: color, widget: string, required: false }
+          - { label: Size, name: size, widget: string, required: false }
+          - { label: Specs, name: specs, widget: text, required: false }
+      - { label: MOQ, name: moq, widget: string, required: false }
+      - { label: OEM / ODM, name: oem, widget: boolean, default: true }
+      - { label: SEO Title, name: seoTitle, widget: string, required: false }
+      - { label: SEO Description, name: seoDescription, widget: text, required: false }
+      - { label: Publish, name: draft, widget: boolean, default: false, hint: "Set true to hide this product from the public catalog." }
+
+  - name: pages
+    label: Site Pages
+    files:
+      - label: Homepage
+        name: homepage
+        file: src/data/site-home.json
+        fields:
+          - { label: Hero Badge, name: heroBadge, widget: string }
+          - { label: Hero Title, name: heroTitle, widget: string }
+          - { label: Hero Highlight, name: heroHighlight, widget: string }
+          - { label: Hero Subtitle, name: heroSubtitle, widget: string }
+          - { label: Hero Description, name: heroDescription, widget: text }
+          - { label: Hero Image 1, name: heroImage1, widget: image, choose_url: false }
+          - { label: Hero Image 2, name: heroImage2, widget: image, choose_url: false }
+          - { label: Brand Story Title, name: storyTitle, widget: string }
+          - { label: Brand Story Label, name: storyLabel, widget: string }
+          - { label: Brand Story Image, name: storyImage, widget: image, choose_url: false }
+          - { label: Brand Story Paragraph 1, name: storyParagraph1, widget: text }
+          - { label: Brand Story Paragraph 2, name: storyParagraph2, widget: text }
+      - label: SEO / Brand Settings
+        name: settings
+        file: src/data/site-settings.json
+        fields:
+          - { label: Brand Name, name: brand, widget: string }
+          - { label: Site Title, name: title, widget: string }
+          - { label: Site Description, name: description, widget: text }
+          - { label: Default Social Image, name: defaultOgImage, widget: image, choose_url: false }
+          - { label: WhatsApp Number, name: whatsapp, widget: string, hint: "International format without + or spaces." }
+          - { label: Sales Email, name: email, widget: string }
+
+  - name: blog
+    label: Blog
+    label_singular: Article
+    folder: src/content/blog
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{title}} · {{date}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Publish Date, name: date, widget: datetime, format: "YYYY-MM-DD" }
+      - { label: Cover Image, name: image, widget: image, choose_url: false, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Body, name: body, widget: markdown }
