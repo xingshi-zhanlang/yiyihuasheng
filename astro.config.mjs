@@ -6,8 +6,12 @@ import emdash from 'emdash/astro';
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
+// Keep the repository domain-neutral until the production .com domain is purchased.
+// Cloudflare preview/production can provide PUBLIC_SITE_URL as an environment variable.
+const siteUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:4321';
+
 export default defineConfig({
-  site: 'https://hidream-pet.com',
+  site: siteUrl,
   output: 'server',
   adapter: cloudflare(),
   integrations: [
@@ -20,7 +24,7 @@ export default defineConfig({
       // plugins are intentionally not enabled until the site is validated.
       plugins: [],
       toolbar: 'client',
-      siteUrl: 'https://hidream-pet.com',
+      siteUrl,
     }),
   ],
   i18n: {

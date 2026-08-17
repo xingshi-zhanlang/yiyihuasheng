@@ -1,5 +1,7 @@
-// 站点全局常量配置；基础品牌与联系方式可通过 /admin 修改。
+// 站点全局常量配置；基础品牌与联系方式可通过 CMS 维护。
 import siteSettings from './data/site-settings.json';
+
+const publicSiteUrl = import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321';
 
 export const SITE = {
   name: 'HiDREAM',
@@ -7,7 +9,7 @@ export const SITE = {
   slogan: '与爱宠同行，从 HiDREAM 开始',
   title: siteSettings.title,
   description: siteSettings.description,
-  url: 'https://hidream-pet.com',
+  url: publicSiteUrl,
   defaultOgImage: siteSettings.defaultOgImage,
 } as const;
 
