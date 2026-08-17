@@ -1,5 +1,4 @@
-// 产品数据辅助层：解析 products.json，使用精确的SKU-图片映射，生成 slug
-// 所有文件系统操作均在构建时（SSG）执行
+// 产品数据辅助层：解析 products.json + CMS Markdown 产品，使用 SKU-图片映射生成静态产品目录。
 import { getImage } from 'astro:assets';
 import rawProducts from '../data/products.json';
 import imageMapping from '../data/image-mapping.json';
@@ -15,26 +14,22 @@ type Translations = {
 };
 const translations = productTranslations as Translations;
 
-// SKU -> 图片列表的映射（从xlsx drawing XML精确解析得到）
+// SKU -> 图片列表的映射（历史产品数据）
 const skuImageMap = imageMapping as Record<string, { images: string[]; category: string; product_name: string }>;
 
-// 用 import.meta.glob 批量导入 src/assets/products 下的所有图片
-// eager: true 表示立即导入，返回 { path: ImageMetadata }
+// 用 import.meta.glob 批量导入历史产品图片
 const productImageGlob = import.meta.glob('../assets/products/**/*.{png,jpg,jpeg,webp,avif}', {
   eager: true,
   import: 'default',
 }) as Record<string, ImageMetadata>;
 
-// 建立 文件名 -> ImageMetadata 的映射，方便按文件名查找
+// 建立 文件名 -> ImageMetadata 的映射
 const imageByName: Record<string, ImageMetadata> = {};
 for (const [path, meta] of Object.entries(productImageGlob)) {
   const filename = path.split('/').pop() || '';
-  if (filename) {
-    imageByName[filename] = meta;
-  }
+  if (filename) imageByName[filename] = meta;
 }
 
-// 原始产品类型
 export interface RawVariant {
   sku: string;
   color: string;
@@ -52,71 +47,63 @@ export interface RawProduct {
   variants: RawVariant[];
 }
 
-// 解析后的产品类型
 export interface Variant extends RawVariant {
   colorClean: string;
-  colorEn: string; // 英文颜色名
+  colorEn: string;
 }
 
+// image/galleries 同时支持 Astro ImageMetadata（历史素材）与 public 路径（CMS 新素材）。
 export interface Product {
   id: string;
-  name: string; // 产品名（第一行，中文）
-  nameEn: string; // 英文产品名
-  nameCn: string; // 同 name（中文产品名）
-  description: string; // 产品描述（剩余行）
+  name: string;
+  nameEn: string;
+  nameCn: string;
+  description: string;
   category: string;
   categoryName: string;
   slug: string;
   variants: Variant[];
-  image: ImageMetadata | null; // 主图（Astro ImageMetadata）
-  gallery: ImageMetadata[]; // 图集
+  image: ImageMetadata | string | null;
+  gallery: Array<ImageMetadata | string>;
   firstSku: string;
+  moq?: string;
+  oem?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  draft?: boolean;
 }
 
-// 翻译辅助函数：根据 locale 返回产品名
 export function getProductName(p: Product, locale: Locale): string {
   return locale === 'zh' ? p.nameCn : (p.nameEn || p.nameCn);
 }
 
-// 翻译辅助函数：根据 locale 返回颜色名
 export function getVariantColor(v: Variant, locale: Locale): string {
   return locale === 'zh' ? v.colorClean : (v.colorEn || v.colorClean);
 }
 
 const products = rawProducts as RawProduct[];
 
-// 清理字符串：去除首尾空白与多余换行
 function clean(s: string): string {
   return (s || '').replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-// 由 SKU 生成 URL slug；无 SKU 时回退到名称 + 索引
 function slugify(sku: string, name: string, index: number): string {
-  if (sku) {
-    return sku.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  }
-  const base = name
-    .toLowerCase()
-    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-    .replace(/^-|-$/g, '');
+  if (sku) return sku.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const base = name.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-').replace(/^-|-$/g, '');
   return `${base || 'item'}-${index}`;
 }
 
-// 根据产品的变体SKU列表，从映射表中查找所有对应的图片
-// 返回 ImageMetadata 数组（Astro可优化的图片对象）
 function getImagesForProduct(variants: RawVariant[]): ImageMetadata[] {
   const images: ImageMetadata[] = [];
   const seen = new Set<string>();
   for (const v of variants) {
     const mapping = skuImageMap[v.sku];
-    if (mapping && mapping.images) {
+    if (mapping?.images) {
       for (const img of mapping.images) {
         if (!seen.has(img)) {
           seen.add(img);
           const meta = imageByName[img];
-          if (meta) {
-            images.push(meta);
-          }
+          if (meta) images.push(meta);
         }
       }
     }
@@ -124,13 +111,10 @@ function getImagesForProduct(variants: RawVariant[]): ImageMetadata[] {
   return images;
 }
 
-// 解析全部产品
-export const allProducts: Product[] = products.map((p, idx) => {
+const legacyProducts: Product[] = products.map((p, idx) => {
   const lines = (p.name || '').split('\n').map((l) => l.trim()).filter(Boolean);
   const name = lines[0] || `Product ${idx + 1}`;
   const description = lines.slice(1).join(' ') || p.description || '';
-
-  // 查找英文产品名翻译
   const nameEn = translations.products[name] || name;
 
   const variants: Variant[] = (p.variants || []).map((v) => ({
@@ -141,17 +125,10 @@ export const allProducts: Product[] = products.map((p, idx) => {
 
   const firstSku = variants[0]?.sku || '';
   const slug = slugify(firstSku, name, idx);
-
-  // 使用精确的SKU-图片映射为产品分配图片
   const productImages = getImagesForProduct(p.variants || []);
 
-  const image = productImages.length > 0 ? productImages[0] : null;
-
-  // 图集：使用该产品所有变体对应的图片（最多8张）
-  const gallery = productImages.slice(0, 8);
-
   return {
-    id: `p-${idx}`,
+    id: `legacy-${idx}`,
     name,
     nameEn,
     nameCn: name,
@@ -160,26 +137,89 @@ export const allProducts: Product[] = products.map((p, idx) => {
     categoryName: p.category_name,
     slug,
     variants,
-    image,
-    gallery,
-    firstSku,
+    image: productImages[0] || null,
+    gallery: productImages.slice(0, 8),
+    firstSku: firstSku,
   };
 });
 
-// 按品类分组
+// CMS 产品：每个条目都是一个 Markdown 文件，图片由 Decap CMS 上传到 public/images/uploads。
+interface CmsProductFrontmatter {
+  name?: string;
+  nameEn?: string;
+  sku?: string;
+  category?: string;
+  description?: string;
+  image?: string;
+  gallery?: string[];
+  variants?: Array<{ sku?: string; color?: string; size?: string; specs?: string }>;
+  moq?: string;
+  oem?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  draft?: boolean;
+}
+
+type CmsModule = { frontmatter: CmsProductFrontmatter };
+const cmsProductModules = import.meta.glob('../content/products/*.md', { eager: true }) as Record<string, CmsModule>;
+
+const cmsProducts: Product[] = Object.entries(cmsProductModules)
+  .map(([path, module], idx) => {
+    const front = module.frontmatter || {};
+    const fileName = path.split('/').pop()?.replace(/\.md$/, '') || `cms-${idx}`;
+    const name = front.name?.trim() || fileName;
+    const nameEn = front.nameEn?.trim() || name;
+    const category = front.category || 'functional';
+    const variants: Variant[] = (front.variants || []).map((v) => {
+      const colorClean = clean(v.color || '');
+      return {
+        sku: v.sku || front.sku || '',
+        color: colorClean,
+        size: v.size || '',
+        specs: v.specs || '',
+        wholesale_price: '',
+        retail_price: '',
+        colorClean,
+        colorEn: translations.colors[colorClean] || colorClean,
+      };
+    });
+
+    const firstSku = variants[0]?.sku || front.sku || '';
+    const slug = slugify(firstSku, name, idx);
+    const gallery = (front.gallery || []).filter(Boolean);
+
+    return {
+      id: `cms-${fileName}`,
+      name,
+      nameEn,
+      nameCn: name,
+      description: front.description || '',
+      category,
+      categoryName: CATEGORIES.find((c) => c.slug === category)?.name || category,
+      slug,
+      variants,
+      image: front.image || gallery[0] || null,
+      gallery,
+      firstSku,
+      moq: front.moq,
+      oem: front.oem,
+      seoTitle: front.seoTitle,
+      seoDescription: front.seoDescription,
+      draft: Boolean(front.draft),
+    } satisfies Product;
+  })
+  .filter((p) => !p.draft);
+
+export const allProducts: Product[] = [...legacyProducts, ...cmsProducts];
+
 export function getProductsByCategory(category: string): Product[] {
   return allProducts.filter((p) => p.category === category);
 }
 
-// 根据 category + slug 获取单个产品
-export function getProductBySlug(
-  category: string,
-  slug: string,
-): Product | undefined {
+export function getProductBySlug(category: string, slug: string): Product | undefined {
   return allProducts.find((p) => p.category === category && p.slug === slug);
 }
 
-// 品类信息 + 产品数 + 封面图
 export interface CategoryWithCount {
   slug: string;
   name: string;
@@ -187,34 +227,26 @@ export interface CategoryWithCount {
   description: string;
   tagline: string;
   count: number;
-  cover: ImageMetadata | null;
+  cover: ImageMetadata | string | null;
 }
 
 export function getCategoriesWithCounts(): CategoryWithCount[] {
   return CATEGORIES.map((c) => {
     const items = getProductsByCategory(c.slug).filter((p) => p.variants.length > 0);
     const cover = items[0]?.image || null;
-    return {
-      ...c,
-      count: items.length,
-      cover,
-    };
+    return { ...c, count: items.length, cover };
   });
 }
 
-// 精选产品：每个品类取前 N 个（有变体的）
 export function getFeaturedProducts(perCategory = 2): Product[] {
   const featured: Product[] = [];
   for (const c of CATEGORIES) {
-    const items = getProductsByCategory(c.slug).filter(
-      (p) => p.variants.length > 0,
-    );
+    const items = getProductsByCategory(c.slug).filter((p) => p.variants.length > 0);
     featured.push(...items.slice(0, perCategory));
   }
   return featured;
 }
 
-// 有效品类 slug 集合（用于 getStaticPaths 校验）
 export function getValidCategorySlugs(): string[] {
   return CATEGORIES.map((c) => c.slug);
 }
