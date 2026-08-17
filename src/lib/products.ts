@@ -1,12 +1,10 @@
-// 产品数据辅助层：解析 products.json + CMS Markdown 产品，使用 SKU-图片映射生成静态产品目录。
-import { getImage } from 'astro:assets';
+// Product data compatibility layer: legacy JSON + CMS content during migration.
 import rawProducts from '../data/products.json';
 import imageMapping from '../data/image-mapping.json';
 import productTranslations from '../data/product-translations.json';
 import { CATEGORIES } from '../consts';
 import type { Locale } from '../i18n/utils';
 
-// 翻译数据类型
 type Translations = {
   products: Record<string, string>;
   colors: Record<string, string>;
@@ -14,16 +12,13 @@ type Translations = {
 };
 const translations = productTranslations as Translations;
 
-// SKU -> 图片列表的映射（历史产品数据）
 const skuImageMap = imageMapping as Record<string, { images: string[]; category: string; product_name: string }>;
 
-// 用 import.meta.glob 批量导入历史产品图片
 const productImageGlob = import.meta.glob('../assets/products/**/*.{png,jpg,jpeg,webp,avif}', {
   eager: true,
   import: 'default',
 }) as Record<string, ImageMetadata>;
 
-// 建立 文件名 -> ImageMetadata 的映射
 const imageByName: Record<string, ImageMetadata> = {};
 for (const [path, meta] of Object.entries(productImageGlob)) {
   const filename = path.split('/').pop() || '';
@@ -52,7 +47,7 @@ export interface Variant extends RawVariant {
   colorEn: string;
 }
 
-// image/galleries 同时支持 Astro ImageMetadata（历史素材）与 public 路径（CMS 新素材）。
+// Public URL shape shared by legacy local assets and future R2/CMS assets.
 export interface Product {
   id: string;
   name: string;
@@ -63,8 +58,8 @@ export interface Product {
   categoryName: string;
   slug: string;
   variants: Variant[];
-  image: ImageMetadata | string | null;
-  gallery: Array<ImageMetadata | string>;
+  image: string | null;
+  gallery: string[];
   firstSku: string;
   moq?: string;
   oem?: boolean;
@@ -93,18 +88,17 @@ function slugify(sku: string, name: string, index: number): string {
   return `${base || 'item'}-${index}`;
 }
 
-function getImagesForProduct(variants: RawVariant[]): ImageMetadata[] {
-  const images: ImageMetadata[] = [];
+function getImagesForProduct(variants: RawVariant[]): string[] {
+  const images: string[] = [];
   const seen = new Set<string>();
   for (const v of variants) {
     const mapping = skuImageMap[v.sku];
     if (mapping?.images) {
       for (const img of mapping.images) {
-        if (!seen.has(img)) {
-          seen.add(img);
-          const meta = imageByName[img];
-          if (meta) images.push(meta);
-        }
+        if (seen.has(img)) continue;
+        seen.add(img);
+        const meta = imageByName[img];
+        if (meta) images.push(meta.src);
       }
     }
   }
@@ -139,11 +133,11 @@ const legacyProducts: Product[] = products.map((p, idx) => {
     variants,
     image: productImages[0] || null,
     gallery: productImages.slice(0, 8),
-    firstSku: firstSku,
+    firstSku,
   };
 });
 
-// CMS 产品：每个条目都是一个 Markdown 文件，图片由 Decap CMS 上传到 public/images/uploads。
+// Legacy CMS Markdown bridge kept only for migration/preview compatibility.
 interface CmsProductFrontmatter {
   name?: string;
   nameEn?: string;
@@ -227,7 +221,7 @@ export interface CategoryWithCount {
   description: string;
   tagline: string;
   count: number;
-  cover: ImageMetadata | string | null;
+  cover: string | null;
 }
 
 export function getCategoriesWithCounts(): CategoryWithCount[] {

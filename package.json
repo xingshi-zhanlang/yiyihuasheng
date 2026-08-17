@@ -1,22 +1,38 @@
 {
   "name": "hidream-site",
   "type": "module",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "HiDREAM 宠生几何 - 宠物出行用品 B2B 独立站",
+  "private": true,
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "typecheck": "astro check",
+    "astro": "astro",
+    "emdash:types": "emdash types",
+    "migrate:products": "node scripts/migrate-products-to-emdash.mjs"
+  },
+  "emdash": {
+    "seed": "seed/seed.json"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.0.0",
+    "@astrojs/react": "^6.0.0",
     "@astrojs/sitemap": "^3.2.1",
+    "@emdash-cms/cloudflare": "^0.30.0",
+    "astro": "^7.0.0",
+    "emdash": "^0.30.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "@tailwindcss/vite": "^4.0.0",
-    "astro": "^5.1.1",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.7",
+    "@cloudflare/workers-types": "^5.20260817.1",
     "wrangler": "^4.122.0"
-  }
+  },
+  "packageManager": "pnpm@11.9.0"
 }

@@ -1,0 +1,133 @@
+{
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "meta": {
+    "name": "HiDREAM Brand Commerce",
+    "description": "HiDREAM B2B pet travel and lifestyle product catalog",
+    "author": "HiDREAM"
+  },
+  "settings": {
+    "title": "HiDREAM | Pet Products & Travel Gear",
+    "tagline": "Thoughtful design for life with pets",
+    "postsPerPage": 12
+  },
+  "collections": [
+    {
+      "slug": "products",
+      "label": "Products",
+      "labelSingular": "Product",
+      "description": "Products available for B2B inquiry and wholesale sourcing.",
+      "icon": "package",
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        { "slug": "name", "label": "Product Name", "type": "string", "required": true },
+        { "slug": "name_cn", "label": "Chinese Name", "type": "string" },
+        { "slug": "sku", "label": "SKU", "type": "string", "unique": true },
+        { "slug": "category", "label": "Category", "type": "string" },
+        { "slug": "short_description", "label": "Short Description", "type": "text" },
+        { "slug": "description", "label": "Description", "type": "portableText" },
+        { "slug": "cover_image", "label": "Cover Image", "type": "image" },
+        { "slug": "gallery", "label": "Gallery", "type": "json" },
+        { "slug": "lifestyle_images", "label": "Lifestyle Images", "type": "json" },
+        { "slug": "detail_images", "label": "Detail Images", "type": "json" },
+        { "slug": "variants", "label": "Variants", "type": "json" },
+        { "slug": "specifications", "label": "Specifications", "type": "json" },
+        { "slug": "moq", "label": "MOQ", "type": "integer" },
+        { "slug": "oem", "label": "OEM", "type": "boolean", "defaultValue": true },
+        { "slug": "odm", "label": "ODM", "type": "boolean", "defaultValue": true },
+        { "slug": "lead_time", "label": "Lead Time", "type": "string" },
+        { "slug": "seo_title", "label": "SEO Title", "type": "string" },
+        { "slug": "seo_description", "label": "SEO Description", "type": "text" },
+        { "slug": "og_image", "label": "OG Image", "type": "image" }
+      ]
+    },
+    {
+      "slug": "collections",
+      "label": "Collections",
+      "labelSingular": "Collection",
+      "description": "Curated product groups shown across the storefront.",
+      "icon": "layers",
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        { "slug": "name", "label": "Name", "type": "string", "required": true },
+        { "slug": "name_cn", "label": "Chinese Name", "type": "string" },
+        { "slug": "description", "label": "Description", "type": "text" },
+        { "slug": "description_cn", "label": "Chinese Description", "type": "text" },
+        { "slug": "cover_image", "label": "Cover Image", "type": "image" },
+        { "slug": "featured", "label": "Featured", "type": "boolean", "defaultValue": false },
+        { "slug": "sort_order", "label": "Sort Order", "type": "integer", "defaultValue": 0 }
+      ]
+    },
+    {
+      "slug": "homepage_sections",
+      "label": "Homepage Sections",
+      "labelSingular": "Homepage Section",
+      "description": "Editable sections that compose the HiDREAM homepage.",
+      "icon": "layout-dashboard",
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        { "slug": "section_type", "label": "Section Type", "type": "string", "required": true },
+        { "slug": "enabled", "label": "Enabled", "type": "boolean", "defaultValue": true },
+        { "slug": "sort_order", "label": "Sort Order", "type": "integer", "defaultValue": 0 },
+        { "slug": "title", "label": "Title", "type": "string" },
+        { "slug": "subtitle", "label": "Subtitle", "type": "string" },
+        { "slug": "description", "label": "Description", "type": "text" },
+        { "slug": "desktop_image", "label": "Desktop Image", "type": "image" },
+        { "slug": "mobile_image", "label": "Mobile Image", "type": "image" },
+        { "slug": "product_ids", "label": "Product IDs", "type": "json" },
+        { "slug": "collection_id", "label": "Collection ID", "type": "string" },
+        { "slug": "cta", "label": "CTA", "type": "json" },
+        { "slug": "content", "label": "Rich Content", "type": "portableText" }
+      ]
+    },
+    {
+      "slug": "site_settings",
+      "label": "Site Settings",
+      "labelSingular": "Site Setting",
+      "description": "Brand, contact and SEO defaults used by the storefront.",
+      "icon": "settings",
+      "supports": ["revisions"],
+      "fields": [
+        { "slug": "brand", "label": "Brand", "type": "string", "required": true },
+        { "slug": "title", "label": "Site Title", "type": "string", "required": true },
+        { "slug": "description", "label": "Site Description", "type": "text" },
+        { "slug": "logo", "label": "Logo", "type": "image" },
+        { "slug": "favicon", "label": "Favicon", "type": "image" },
+        { "slug": "default_og_image", "label": "Default OG Image", "type": "image" },
+        { "slug": "whatsapp", "label": "WhatsApp", "type": "string" },
+        { "slug": "email", "label": "Email", "type": "email" },
+        { "slug": "navigation", "label": "Navigation", "type": "json" },
+        { "slug": "social_links", "label": "Social Links", "type": "json" }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "product_category",
+      "label": "Product Categories",
+      "labelSingular": "Product Category",
+      "hierarchical": true,
+      "collections": ["products"],
+      "terms": [
+        { "slug": "new-arrivals", "label": "New Arrivals" },
+        { "slug": "carrier-bags", "label": "Carrier Bags" },
+        { "slug": "cat-products", "label": "Cat Products" },
+        { "slug": "dog-travel", "label": "Dog Travel" },
+        { "slug": "functional", "label": "Functional Gear" }
+      ]
+    }
+  ],
+  "menus": [
+    {
+      "name": "primary",
+      "label": "Primary Navigation",
+      "items": [
+        { "type": "custom", "label": "Home", "url": "/" },
+        { "type": "custom", "label": "Products", "url": "/products" },
+        { "type": "custom", "label": "About", "url": "/about" },
+        { "type": "custom", "label": "Blog", "url": "/blog" },
+        { "type": "custom", "label": "Contact", "url": "/contact" }
+      ]
+    }
+  ]
+}
