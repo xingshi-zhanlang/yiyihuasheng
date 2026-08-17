@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "typecheck": "astro check",
     "astro": "astro",
-    "emdash:types": "emdash types"
+    "emdash:types": "emdash types",
+    "migrate:products": "node scripts/migrate-products-to-emdash.mjs"
   },
   "emdash": {
     "seed": "seed/seed.json"
