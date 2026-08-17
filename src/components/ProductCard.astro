@@ -1,5 +1,5 @@
 ---
-// 产品卡片：图片 + 名称 + SKU + 品类 + 加入询盘 / 详情
+// 产品卡片：图片 + 名称 + SKU + 品类标签 + 询盘购物车
 import { Image } from 'astro:assets';
 import type { Product } from '../lib/products';
 import { getProductName } from '../lib/products';
@@ -17,43 +17,74 @@ const basePath = getLocalePath(locale);
 const cat = CATEGORIES.find((c) => c.slug === product.category);
 const detailLink = `${basePath}/products/${product.category}/${product.slug}`;
 const displayName = getProductName(product, locale);
-const inquiryPayload = JSON.stringify({
-  id: product.slug,
+const inquiryData = JSON.stringify({
+  id: product.id,
   name: displayName,
   sku: product.firstSku,
-  url: new URL(detailLink, Astro.site ?? Astro.url).href,
+  url: new URL(detailLink, Astro.site ?? 'https://hidream-pet.com').toString(),
   qty: 1,
-}).replace(/</g, '\\u003c');
+});
 ---
 
 <article class="group relative flex flex-col overflow-hidden rounded-3xl border border-milk-tea/50 bg-white/70 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-hover">
   <a href={detailLink} class="relative block aspect-[4/5] overflow-hidden bg-milk-tea/30" aria-label={displayName}>
     {product.image ? (
-      <Image src={product.image} alt={displayName} loading={eager ? 'eager' : 'lazy'} decoding="async" width={640} height={800} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" format="webp" quality={80} />
+      typeof product.image === 'string' ? (
+        <img
+          src={product.image}
+          alt={displayName}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          width="640"
+          height="800"
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <Image
+          src={product.image}
+          alt={displayName}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          width={640}
+          height={800}
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          format="webp"
+          quality={80}
+        />
+      )
     ) : (
-      <div class="flex h-full w-full items-center justify-center text-stone/40"><svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg></div>
+      <div class="flex h-full w-full items-center justify-center text-stone/40">
+        <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6H6v12Z" /></svg>
+      </div>
     )}
-    {cat && <span class="absolute left-3 top-3 rounded-full bg-cream/90 px-3 py-1 text-[11px] font-semibold tracking-wide text-olive-dark backdrop-blur">{getCategoryName(locale, cat.slug)}</span>}
+    {cat && (
+      <span class="absolute left-3 top-3 rounded-full bg-cream/90 px-3 py-1 text-[11px] font-semibold tracking-wide text-olive-dark backdrop-blur">
+        {getCategoryName(locale, cat.slug)}
+      </span>
+    )}
   </a>
 
   <div class="flex flex-1 flex-col p-4 md:p-5">
-    <h3 class="line-clamp-2 font-medium leading-snug text-dark-brown"><a href={detailLink} class="transition-colors hover:text-olive">{displayName}</a></h3>
+    <h3 class="line-clamp-2 font-medium leading-snug text-dark-brown">
+      <a href={detailLink} class="transition-colors hover:text-olive">{displayName}</a>
+    </h3>
+
     <div class="mt-2 flex items-center gap-2 text-xs text-stone">
       <span class="rounded-md bg-milk-tea/40 px-2 py-0.5 font-mono">{product.firstSku}</span>
       {product.variants.length > 1 && <span>{product.variants.length} {t(locale, 'product.variants')}</span>}
     </div>
 
-    <div class="mt-4 grid grid-cols-[1fr_auto] gap-2 pt-1">
+    <div class="mt-4 flex items-center gap-2 pt-1">
       <button
         type="button"
-        data-inquiry-add={inquiryPayload}
-        class="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-olive px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-olive-dark"
+        data-inquiry-add={inquiryData}
+        class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-olive px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-olive-dark"
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6"/></svg>
         {locale === 'zh' ? '加入询盘' : 'Add to inquiry'}
       </button>
       <a href={detailLink} class="inline-flex items-center justify-center rounded-2xl border border-milk-tea px-3 py-2.5 text-sm font-medium text-stone transition-colors hover:border-olive hover:text-olive-dark" aria-label={t(locale, 'action.viewDetails')}>
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
       </a>
     </div>
   </div>
