@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .astro/
+.wrangler/
 .DS_Store
 .env
 .env.*
@@ -9,3 +10,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .trae/
+data.db
+*.db-shm
+*.db-wal
+.emdash/types.ts
+.emdash/schema.json
