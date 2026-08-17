@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'refactor/**'
+      - 'fix/**'
   pull_request:
     branches: [main]
 
@@ -16,7 +17,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm install
-      - run: npm run typecheck
-      - run: npm run build
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run build
