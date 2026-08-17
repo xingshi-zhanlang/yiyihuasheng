@@ -21,9 +21,6 @@ jobs:
         with:
           version: 11.9.0
           run_install: false
-      # No pnpm lockfile is committed yet; use the declared packageManager
-      # rather than falling back to npm. Once pnpm-lock.yaml is generated,
-      # switch this back to --frozen-lockfile.
-      - run: pnpm install
+      - run: pnpm install --config.only-built-dependencies=true
       - run: pnpm run typecheck
       - run: pnpm run build
