@@ -7,6 +7,14 @@ const version = '0.1.1';
 const adminEntry = './src/plugins/github-media/admin.tsx';
 const entrypoint = './src/plugins/github-media/index.ts';
 
+type PluginKv = {
+  get: (key: string) => Promise<string | undefined>;
+};
+
+async function getSetting(ctx: { kv: PluginKv }, key: string): Promise<string | undefined> {
+  return ctx.kv.get(key);
+}
+
 export function githubMediaPlugin(): PluginDescriptor {
   return {
     id,
@@ -36,11 +44,11 @@ function base64Bytes(value: string): number {
   return Math.floor((value.replace(/\s/g, '').length * 3) / 4);
 }
 
-async function githubRequest(ctx: any, url: string, init: RequestInit = {}) {
-  const token = await ctx.kv.get<string>('settings:githubToken');
+async function githubRequest(ctx: { kv: PluginKv; http: { fetch: (url: string, init?: RequestInit) => Promise<Response> } }, url: string, init: RequestInit = {}) {
+  const token = await getSetting(ctx, 'settings:githubToken');
   if (!token) throw new Error('GitHub token is not configured');
 
-  const response = await ctx.http.fetch(url, {
+  return ctx.http.fetch(url, {
     ...init,
     headers: {
       Accept: 'application/vnd.github+json',
@@ -49,8 +57,6 @@ async function githubRequest(ctx: any, url: string, init: RequestInit = {}) {
       ...(init.headers || {}),
     },
   });
-
-  return response;
 }
 
 export function createPlugin() {
@@ -76,10 +82,10 @@ export function createPlugin() {
     routes: {
       status: {
         handler: async (ctx) => {
-          const owner = await ctx.kv.get<string>('settings:githubOwner');
-          const repo = await ctx.kv.get<string>('settings:githubRepo');
-          const branch = (await ctx.kv.get<string>('settings:githubBranch')) || 'main';
-          const tokenSet = Boolean(await ctx.kv.get<string>('settings:githubToken'));
+          const owner = await getSetting(ctx, 'settings:githubOwner');
+          const repo = await getSetting(ctx, 'settings:githubRepo');
+          const branch = (await getSetting(ctx, 'settings:githubBranch')) || 'main';
+          const tokenSet = Boolean(await getSetting(ctx, 'settings:githubToken'));
           return { configured: Boolean(owner && repo && tokenSet), owner, repo, branch, tokenSet };
         },
       },
@@ -96,10 +102,10 @@ export function createPlugin() {
             message: string;
           };
 
-          const owner = await ctx.kv.get<string>('settings:githubOwner');
-          const repo = await ctx.kv.get<string>('settings:githubRepo');
-          const branch = (await ctx.kv.get<string>('settings:githubBranch')) || 'main';
-          if (!owner || !repo || !(await ctx.kv.get<string>('settings:githubToken'))) {
+          const owner = await getSetting(ctx, 'settings:githubOwner');
+          const repo = await getSetting(ctx, 'settings:githubRepo');
+          const branch = (await getSetting(ctx, 'settings:githubBranch')) || 'main';
+          if (!owner || !repo || !(await getSetting(ctx, 'settings:githubToken'))) {
             throw new Response('GitHub media settings are incomplete', { status: 503 });
           }
 
@@ -136,8 +142,7 @@ export function createPlugin() {
 
           if (!response.ok) {
             const text = await response.text();
-            ctx.log.warn('GitHub media upload failed', { status: response.status, body: text.slice(0, 500) });
-            throw new Error(`GitHub upload failed (${response.status})`);
+            throw new Error(`GitHub upload failed (${response.status}): ${text.slice(0, 300)}`);
           }
 
           return {
