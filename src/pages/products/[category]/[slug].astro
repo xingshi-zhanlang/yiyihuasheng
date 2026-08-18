@@ -1,313 +1,58 @@
 ---
-// 产品详情页：大图 + 参数表 + 变体列表 + 立即询价按钮（跳转 WhatsApp）
-import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import ProductGrid from '../../../components/ProductGrid.astro';
-import {
-  allProducts,
-  getProductsByCategory,
-  getValidCategorySlugs,
-  getProductName,
-  getVariantColor,
-  type Product,
-} from '../../../lib/products';
+import { getPublicProducts } from '../../../lib/catalog';
+import { allProducts, getProductName, getVariantColor } from '../../../lib/products';
 import { CATEGORIES, CONTACT } from '../../../consts';
 import { t, getLocalePath, getCategoryName, type Locale } from '../../../i18n/utils';
 
-// 静态生成所有产品详情页
-export function getStaticPaths() {
-  const paths: { params: { category: string; slug: string } }[] = [];
-  for (const category of getValidCategorySlugs()) {
-    const items = allProducts.filter(
-      (p) => p.category === category && p.variants.length > 0,
-    );
-    for (const p of items) {
-      paths.push({ params: { category, slug: p.slug } });
-    }
-  }
-  return paths;
-}
-
-const { category, slug } = Astro.params;
-const product = allProducts.find(
-  (p) => p.category === category && p.slug === slug,
-)!;
-
-const cat = CATEGORIES.find((c) => c.slug === category)!;
-
-// 相关产品：同品类其他产品，取 4 个
-const related = getProductsByCategory(category!)
-  .filter((p) => p.variants.length > 0 && p.slug !== slug)
-  .slice(0, 4);
-
 const locale: Locale = 'en';
 const basePath = getLocalePath(locale);
-const catName = getCategoryName(locale, cat.slug);
-const displayName = getProductName(product, locale);
-
-// 立即询价 WhatsApp 链接
-const inquireMsg = encodeURIComponent(
-  t(locale, 'whatsapp.detailMsg', { name: displayName, sku: product.firstSku, category: catName }),
-);
+const env = (Astro.locals.runtime?.env || {}) as { DB?: D1Database };
+const { category, slug } = Astro.params;
+const catalog = await getPublicProducts(env);
+const product = catalog.find((item) => item.category === category && item.slug === slug) || allProducts.find((item) => item.category === category && item.slug === slug);
+const cat = CATEGORIES.find((item) => item.slug === category) || CATEGORIES[0];
+const displayName = product ? getProductName(product, locale) : 'Product not found';
+const related = product ? catalog.filter((item) => item.category === category && item.variants.length > 0 && item.slug !== slug).slice(0, 4) : [];
+const inquireMsg = product ? encodeURIComponent(t(locale, 'whatsapp.detailMsg', { name: displayName, sku: product.firstSku, category: getCategoryName(locale, cat.slug) })) : '';
 const inquireLink = `https://wa.me/${CONTACT.whatsapp}?text=${inquireMsg}`;
-
-// 解析 specs 为行
-function parseSpecs(specs: string): string[] {
-  return (specs || '')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
-}
-
-// 收集变体颜色（去重，保留有值的）
-const colors = Array.from(
-  new Set(product.variants.map((v) => v.colorClean).filter(Boolean)),
-);
-const sizes = Array.from(
-  new Set(product.variants.map((v) => v.size).filter(Boolean)),
-);
+const colors = product ? Array.from(new Set(product.variants.map((v) => v.colorClean).filter(Boolean))) : [];
+const sizes = product ? Array.from(new Set(product.variants.map((v) => v.size).filter(Boolean))) : [];
+function parseSpecs(specs: string) { return (specs || '').split('\n').map((line) => line.trim()).filter(Boolean); }
 ---
 
-<Layout
-  locale="en"
-  title={`${displayName} (${product.firstSku}) | HiDREAM® Wholesale`}
-  description={product.description || `${displayName} — ${catName}. Wholesale & OEM/ODM.`}
->
+<Layout locale="en" noindex={!product} title={product ? `${displayName} (${product.firstSku}) | HiDREAM® Wholesale` : 'Product not found | HiDREAM®'} description={product?.description || 'HiDREAM pet travel gear wholesale and OEM/ODM.'}>
   <section class="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
-    <!-- 面包屑 -->
-    <nav class="text-xs text-stone" aria-label="Breadcrumb">
-      <a href={`${basePath}/`} class="hover:text-olive-dark">{t(locale, 'nav.home')}</a>
-      <span class="mx-1.5">/</span>
-      <a href={`${basePath}/products`} class="hover:text-olive-dark">{t(locale, 'nav.products')}</a>
-      <span class="mx-1.5">/</span>
-      <a href={`${basePath}/products/${category}`} class="hover:text-olive-dark">{catName}</a>
-      <span class="mx-1.5">/</span>
-      <span class="text-dark-brown">{displayName}</span>
-    </nav>
-
-    <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
-      <!-- 图集 -->
-      <div>
-        <div class="main-image-container overflow-hidden rounded-3xl bg-milk-tea/30 shadow-soft">
-          {product.gallery.length > 0 ? (
-            product.gallery.map((img, i) => (
-              <Image
-                src={img}
-                alt={`${displayName} view ${i + 1}`}
-                width={720}
-                height={900}
-                class={`gallery-main aspect-[4/5] w-full object-cover ${i === 0 ? 'block' : 'hidden'}`}
-                loading={i === 0 ? 'eager' : 'lazy'}
-                format="webp"
-                quality={85}
-                data-index={i}
-              />
-            ))
-          ) : product.image ? (
-            <Image
-              src={product.image}
-              alt={displayName}
-              width={720}
-              height={900}
-              class="aspect-[4/5] w-full object-cover"
-              loading="eager"
-              format="webp"
-              quality={85}
-            />
-          ) : (
-            <div class="flex aspect-[4/5] w-full items-center justify-center text-stone/40">
-              <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            </div>
-          )}
-        </div>
-        {
-          product.gallery.length > 1 && (
-            <div class="mt-4 grid grid-cols-4 gap-3">
-              {product.gallery.map((img, i) => (
-                <button
-                  type="button"
-                  class="overflow-hidden rounded-2xl border-2 border-milk-tea/50 bg-milk-tea/20 transition-colors hover:border-olive data-[active=true]:border-olive"
-                  data-active={i === 0 ? 'true' : 'false'}
-                  data-index={i}
-                >
-                  <Image
-                    src={img}
-                    alt={`${displayName} view ${i + 1}`}
-                    width={200}
-                    height={250}
-                    class="aspect-[4/5] w-full object-cover"
-                    loading="lazy"
-                    format="webp"
-                    quality={70}
-                  />
-                </button>
-              ))}
-            </div>
-          )
-        }
-      </div>
-
-      <!-- 信息 -->
-      <div>
-        <span class="inline-flex items-center gap-2 rounded-full bg-olive/10 px-3 py-1 text-xs font-semibold text-olive-dark">
-          {catName} · {cat.nameCn}
-        </span>
-
-        <h1 class="mt-4 font-display text-2xl font-bold leading-tight text-dark-brown md:text-3xl">
-          {displayName}
-        </h1>
-
-        {
-          product.firstSku && (
-            <p class="mt-2 font-mono text-sm text-stone">
-              {t(locale, 'product.sku')}: <span class="text-dark-brown">{product.firstSku}</span>
-            </p>
-          )
-        }
-
-        {
-          product.description && (
-            <p class="mt-4 text-sm leading-relaxed text-stone md:text-base">
-              {product.description}
-            </p>
-          )
-        }
-
-        <!-- 颜色与尺码 -->
-        {
-          (colors.length > 0 || sizes.length > 0) && (
-            <div class="mt-6 flex flex-wrap gap-5">
-              {colors.length > 0 && (
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'product.colors')}</p>
-                  <div class="mt-2 flex flex-wrap gap-1.5">
-                    {colors.map((c) => (
-                      <span class="rounded-full bg-milk-tea/50 px-3 py-1 text-xs text-dark-brown">{c}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {sizes.length > 0 && (
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'product.sizes')}</p>
-                  <div class="mt-2 flex flex-wrap gap-1.5">
-                    {sizes.map((s) => (
-                      <span class="rounded-full bg-milk-tea/50 px-3 py-1 text-xs text-dark-brown">{s}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        }
-
-        <!-- 询价按钮 -->
-        <div class="mt-7 flex flex-wrap items-center gap-3">
-          <a
-            href={inquireLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-2xl bg-green-500 px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-green-600 hover:shadow-hover"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.041z"/></svg>
-            {t(locale, 'action.inquireNow')}
-          </a>
-          <a
-            href={`${basePath}/contact`}
-            class="inline-flex items-center gap-2 rounded-2xl border border-milk-tea bg-cream px-7 py-3.5 text-sm font-semibold text-dark-brown transition-all hover:border-olive hover:text-olive-dark"
-          >
-            {t(locale, 'action.emailInquiry')}
-          </a>
-        </div>
-        <p class="mt-3 text-xs text-stone">
-          {t(locale, 'product.priceNote')}
-        </p>
-      </div>
-    </div>
-
-    <!-- 变体参数表 -->
-    {
-      product.variants.length > 0 && (
-        <div class="mt-12">
-          <h2 class="font-display text-xl font-bold text-dark-brown md:text-2xl">
-            {t(locale, 'product.specsTable')}
-          </h2>
-          <div class="mt-5 overflow-hidden rounded-3xl border border-milk-tea/60 shadow-card">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm">
-                <thead class="bg-milk-tea/40 text-xs uppercase tracking-wide text-stone">
-                  <tr>
-                    <th class="px-4 py-3 font-semibold">{t(locale, 'product.sku')}</th>
-                    <th class="px-4 py-3 font-semibold">{t(locale, 'product.colors')}</th>
-                    <th class="px-4 py-3 font-semibold">{t(locale, 'product.sizes')}</th>
-                    <th class="px-4 py-3 font-semibold">Specs</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-milk-tea/50 bg-cream/40">
-                  {product.variants.map((v) => (
-                    <tr class="align-top transition-colors hover:bg-white/70">
-                      <td class="px-4 py-3 font-mono text-dark-brown">{v.sku}</td>
-                      <td class="px-4 py-3 text-dark-brown">{getVariantColor(v, locale) || '—'}</td>
-                      <td class="px-4 py-3 text-dark-brown">{v.size || '—'}</td>
-                      <td class="px-4 py-3 text-stone">
-                        <div class="space-y-0.5">
-                          {parseSpecs(v.specs).map((line) => (
-                            <div>{line}</div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+    {!product ? (
+      <div class="rounded-3xl border border-milk-tea bg-white/70 p-10 text-center"><h1 class="font-display text-3xl font-bold text-dark-brown">Product not found</h1><a href={`${basePath}/products`} class="mt-5 inline-flex rounded-2xl bg-olive px-6 py-3 text-sm font-semibold text-cream">Browse products</a></div>
+    ) : (
+      <>
+        <nav class="text-xs text-stone" aria-label="Breadcrumb"><a href={`${basePath}/`} class="hover:text-olive-dark">{t(locale, 'nav.home')}</a><span class="mx-1.5">/</span><a href={`${basePath}/products`} class="hover:text-olive-dark">{t(locale, 'nav.products')}</a><span class="mx-1.5">/</span><a href={`${basePath}/products/${category}`} class="hover:text-olive-dark">{getCategoryName(locale, cat.slug)}</a><span class="mx-1.5">/</span><span class="text-dark-brown">{displayName}</span></nav>
+        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
+          <div>
+            <div class="overflow-hidden rounded-3xl bg-milk-tea/30 shadow-soft"><div id="gallery-main">{product.gallery.length > 0 ? product.gallery.map((img, i) => <img src={img} alt={`${displayName} view ${i + 1}`} width="720" height="900" class={`gallery-main aspect-[4/5] w-full object-cover ${i === 0 ? 'block' : 'hidden'}`} loading={i === 0 ? 'eager' : 'lazy'} data-index={i} />) : product.image ? <img src={product.image} alt={displayName} width="720" height="900" class="aspect-[4/5] w-full object-cover" loading="eager" /> : <div class="flex aspect-[4/5] items-center justify-center text-stone/40">No image</div>}</div></div>
+            {product.gallery.length > 1 && <div class="mt-4 grid grid-cols-4 gap-3">{product.gallery.map((img, i) => <button type="button" class="overflow-hidden rounded-2xl border-2 border-milk-tea/50 bg-milk-tea/20 transition-colors hover:border-olive data-[active=true]:border-olive" data-active={i === 0 ? 'true' : 'false'} data-index={i}><img src={img} alt={`${displayName} thumbnail ${i + 1}`} width="200" height="250" class="aspect-[4/5] w-full object-cover" loading="lazy" /></button>)}</div>}
+          </div>
+          <div>
+            <span class="inline-flex rounded-full bg-olive/10 px-3 py-1 text-xs font-semibold text-olive-dark">{getCategoryName(locale, cat.slug)} · {cat.nameCn}</span>
+            <h1 class="mt-4 font-display text-2xl font-bold leading-tight text-dark-brown md:text-3xl">{displayName}</h1>
+            {product.firstSku && <p class="mt-2 font-mono text-sm text-stone">{t(locale, 'product.sku')}: <span class="text-dark-brown">{product.firstSku}</span></p>}
+            {product.description && <p class="mt-4 text-sm leading-relaxed text-stone md:text-base">{product.description}</p>}
+            {(colors.length > 0 || sizes.length > 0) && <div class="mt-6 flex flex-wrap gap-5">{colors.length > 0 && <div><p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'product.colors')}</p><div class="mt-2 flex flex-wrap gap-1.5">{colors.map((color) => <span class="rounded-full bg-milk-tea/50 px-3 py-1 text-xs text-dark-brown">{color}</span>)}</div></div>}{sizes.length > 0 && <div><p class="text-xs font-semibold uppercase tracking-wide text-stone">{t(locale, 'product.sizes')}</p><div class="mt-2 flex flex-wrap gap-1.5">{sizes.map((size) => <span class="rounded-full bg-milk-tea/50 px-3 py-1 text-xs text-dark-brown">{size}</span>)}</div></div>}</div>}
+            <div class="mt-7 flex flex-wrap gap-3"><button type="button" data-inquiry-add={JSON.stringify({ id: product.id, name: displayName, sku: product.firstSku, url: new URL(`${basePath}/products/${product.category}/${product.slug}`, Astro.site ?? 'https://hidream-pet.com').toString(), qty: 1 })} class="inline-flex items-center gap-2 rounded-2xl bg-olive px-7 py-3.5 text-sm font-semibold text-cream shadow-soft hover:bg-olive-dark">Add to inquiry</button><a href={inquireLink} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-2xl bg-green-500 px-7 py-3.5 text-sm font-semibold text-white shadow-soft hover:bg-green-600">{t(locale, 'action.inquireNow')}</a><a href={`${basePath}/contact`} class="inline-flex items-center rounded-2xl border border-milk-tea bg-cream px-7 py-3.5 text-sm font-semibold text-dark-brown hover:border-olive">{t(locale, 'action.emailInquiry')}</a></div>
+            <p class="mt-3 text-xs text-stone">{t(locale, 'product.priceNote')}</p>
           </div>
         </div>
-      )
-    }
-
-    <!-- 相关产品 -->
-    {
-      related.length > 0 && (
-        <div class="mt-16">
-          <div class="flex items-end justify-between">
-            <h2 class="font-display text-xl font-bold text-dark-brown md:text-2xl">
-              {t(locale, 'product.moreIn')} {catName}
-            </h2>
-            <a href={`${basePath}/products/${category}`} class="text-sm font-semibold text-olive-dark hover:text-caramel">
-              {t(locale, 'action.viewAll')} →
-            </a>
-          </div>
-          <div class="mt-6">
-            <ProductGrid products={related} locale={locale} />
-          </div>
-        </div>
-      )
-    }
+        {product.variants.length > 0 && <div class="mt-12"><h2 class="font-display text-xl font-bold text-dark-brown md:text-2xl">{t(locale, 'product.specsTable')}</h2><div class="mt-5 overflow-hidden rounded-3xl border border-milk-tea/60 shadow-card"><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-milk-tea/40 text-xs uppercase tracking-wide text-stone"><tr><th class="px-4 py-3">{t(locale, 'product.sku')}</th><th class="px-4 py-3">{t(locale, 'product.colors')}</th><th class="px-4 py-3">{t(locale, 'product.sizes')}</th><th class="px-4 py-3">Specs</th></tr></thead><tbody class="divide-y divide-milk-tea/50 bg-cream/40">{product.variants.map((variant) => <tr class="align-top hover:bg-white/70"><td class="px-4 py-3 font-mono text-dark-brown">{variant.sku}</td><td class="px-4 py-3">{getVariantColor(variant, locale) || '—'}</td><td class="px-4 py-3">{variant.size || '—'}</td><td class="px-4 py-3 text-stone">{parseSpecs(variant.specs).map((line) => <div>{line}</div>)}</td></tr>)}</tbody></table></div></div></div>}
+        {related.length > 0 && <div class="mt-16"><div class="flex items-end justify-between"><h2 class="font-display text-xl font-bold text-dark-brown md:text-2xl">{t(locale, 'product.moreIn')} {getCategoryName(locale, cat.slug)}</h2><a href={`${basePath}/products/${category}`} class="text-sm font-semibold text-olive-dark">{t(locale, 'action.viewAll')} →</a></div><div class="mt-6"><ProductGrid products={related} locale={locale} /></div></div>}
+      </>
+    )}
   </section>
 </Layout>
 
 <script>
-  // 图集切换：点击缩略图切换主图显示
   const mainImgs = document.querySelectorAll<HTMLImageElement>('.gallery-main');
   const thumbs = document.querySelectorAll<HTMLButtonElement>('[data-index]');
-  thumbs.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const index = btn.getAttribute('data-index');
-      // 切换主图显示
-      mainImgs.forEach((img) => {
-        const imgIndex = img.getAttribute('data-index');
-        if (imgIndex === index) {
-          img.classList.remove('hidden');
-          img.classList.add('block');
-        } else {
-          img.classList.add('hidden');
-          img.classList.remove('block');
-        }
-      });
-      // 更新缩略图激活状态
-      thumbs.forEach((b) => b.setAttribute('data-active', 'false'));
-      btn.setAttribute('data-active', 'true');
-    });
-  });
+  thumbs.forEach((button) => button.addEventListener('click', () => { const index = button.getAttribute('data-index'); mainImgs.forEach((image) => { const active = image.getAttribute('data-index') === index; image.classList.toggle('hidden', !active); image.classList.toggle('block', active); }); thumbs.forEach((item) => item.setAttribute('data-active', 'false')); button.setAttribute('data-active', 'true'); }));
 </script>
