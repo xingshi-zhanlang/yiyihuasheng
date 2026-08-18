@@ -2,9 +2,11 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
+type WorkerEnv = { DB?: D1Database };
+
 export const GET: APIRoute = async ({ locals }) => {
   const runtime = locals.runtime;
-  const env = runtime?.env as { DB?: D1Database; MEDIA?: R2Bucket } | undefined;
+  const env = runtime?.env as WorkerEnv | undefined;
 
   let database = 'unavailable';
   if (env?.DB) {
@@ -16,17 +18,8 @@ export const GET: APIRoute = async ({ locals }) => {
     }
   }
 
-  let media = 'unavailable';
-  if (env?.MEDIA) {
-    try {
-      await env.MEDIA.list({ limit: 1 });
-      media = 'ok';
-    } catch {
-      media = 'error';
-    }
-  }
-
-  const healthy = database === 'ok' && media === 'ok';
+  const staticAssets = 'configured';
+  const healthy = database === 'ok';
 
   return new Response(
     JSON.stringify({
@@ -34,7 +27,7 @@ export const GET: APIRoute = async ({ locals }) => {
       service: 'hidream-pet',
       runtime: 'cloudflare-workers',
       database,
-      media,
+      media: staticAssets,
     }),
     {
       status: healthy ? 200 : 503,
