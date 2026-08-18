@@ -1,16 +1,42 @@
 ---
-const configured = Boolean(import.meta.env.ADMIN_USER && import.meta.env.ADMIN_PASSWORD);
 ---
-
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>HiDREAM Admin</title>
-  </head>
-  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 60px auto; padding: 24px;">
-    <h1>HiDREAM Admin</h1>
-    <p>Free Worker mode admin shell. Product management and media publishing are being migrated to the D1 + GitHub Static Assets backend.</p>
-    <p>{configured ? 'Admin credentials are configured.' : 'ADMIN_USER / ADMIN_PASSWORD are not configured yet.'}</p>
-  </body>
-</html>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><title>HiDREAM Admin</title></head>
+<body style="margin:0;background:#f5f6f8;color:#171717;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+<main style="max-width:1180px;margin:auto;padding:32px 20px">
+<section id="loginCard" style="max-width:420px;margin:70px auto;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,.05)">
+<h1 style="margin:0 0 8px">HiDREAM Admin</h1><p style="color:#6b7280">Private store management console</p>
+<input id="user" placeholder="Username" autocomplete="username" style="width:100%;box-sizing:border-box;padding:11px;margin:8px 0;border:1px solid #d1d5db;border-radius:9px" />
+<input id="password" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px;margin:8px 0;border:1px solid #d1d5db;border-radius:9px" />
+<button id="login" style="width:100%;padding:12px;margin-top:8px;border:0;border-radius:9px;background:#111827;color:#fff;font-weight:700">Sign in</button><div id="loginError" style="color:#b91c1c;min-height:22px;margin-top:10px"></div>
+</section>
+<section id="app" hidden>
+<header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><div><h1 style="margin:0">HiDREAM Admin</h1><p style="margin:5px 0;color:#6b7280">Products · D1-backed · zero R2</p></div><button id="logout" style="padding:9px 14px;border:1px solid #d1d5db;background:#fff;border-radius:9px">Sign out</button></header>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:20px;align-items:start">
+<section style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Products</h2><button id="refresh" style="padding:8px 11px;border:1px solid #d1d5db;background:#fff;border-radius:8px">Refresh</button></div><div id="products" style="display:grid;gap:10px;margin-top:14px"></div></section>
+<section style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px"><h2 style="margin:0 0 12px">Add / edit product</h2>
+<input id="id" type="hidden" />
+${[['slug','Slug','soft-pet-carrier'],['nameEn','English name',''],['nameZh','Chinese name',''],['category','Category','carrier-bags'],['image','Cover image URL','/images/products/...'],['moq','MOQ','']].map(([id,label,placeholder]) => `<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">${label}</label><input id="${id}" placeholder="${placeholder}" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px" />`).join('')}
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">Description</label><textarea id="description" rows="5" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px"></textarea>
+<label style="display:flex;gap:7px;align-items:center;margin:10px 0"><input id="oem" type="checkbox" /> OEM available</label>
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">Status</label><select id="status" style="width:100%;padding:9px;border:1px solid #d1d5db;border-radius:8px"><option value="draft">Draft</option><option value="published">Published</option></select>
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">Gallery JSON</label><textarea id="gallery" rows="3" placeholder='["/images/products/a.jpg"]' style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px"></textarea>
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">Variants JSON</label><textarea id="variants" rows="3" placeholder='[{"name":"Blue","sku":"HD-01-B"}]' style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px"></textarea>
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">SEO title</label><input id="seoTitle" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px" />
+<label style="display:block;font-size:12px;font-weight:700;margin:9px 0 4px">SEO description</label><textarea id="seoDescription" rows="3" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #d1d5db;border-radius:8px"></textarea>
+<button id="save" style="width:100%;padding:11px;margin-top:13px;border:0;border-radius:9px;background:#111827;color:#fff;font-weight:700">Save product</button><button id="clear" style="width:100%;padding:9px;margin-top:6px;border:0;background:transparent;color:#6b7280">Clear</button><div id="message" style="min-height:22px;margin-top:10px"></div>
+</section></div></section></main>
+<script>
+// @ts-nocheck
+const $=(id)=>document.getElementById(id); const loginCard=$('loginCard'),app=$('app'),loginError=$('loginError'),products=$('products'),message=$('message');
+const api=(url,options={})=>fetch(url,{credentials:'same-origin',...options,headers:{'content-type':'application/json',...(options.headers||{})}});
+const field=(id)=>$(id).value;
+function showApp(){loginCard.hidden=true;app.hidden=false;loadProducts();}
+async function login(){loginError.textContent='';const r=await api('/api/admin/login',{method:'POST',body:JSON.stringify({user:field('user'),password:field('password')})});if(!r.ok){loginError.textContent='Invalid username or password.';return;}showApp();}
+function escapeHtml(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));}
+function fill(p){$('id').value=p.id||'';$('slug').value=p.slug||'';$('nameEn').value=p.name_en||'';$('nameZh').value=p.name_zh||'';$('category').value=p.category||'';$('image').value=p.image||'';$('description').value=p.description||'';$('moq').value=p.moq||'';$('oem').checked=!!p.oem;$('status').value=p.status||'draft';$('gallery').value=p.gallery_json||'[]';$('variants').value=p.variants_json||'[]';$('seoTitle').value=p.seo_title||'';$('seoDescription').value=p.seo_description||'';}
+async function loadProducts(){const r=await api('/api/admin/products');if(r.status===401){loginCard.hidden=false;app.hidden=true;return;}const d=await r.json();products.textContent='';for(const p of d.products||[]){const row=document.createElement('div');row.style.cssText='border:1px solid #e5e7eb;border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:center';row.innerHTML=`<div><div style="font-weight:700">${escapeHtml(p.name_en)}</div><div style="font-size:12px;color:#6b7280">${escapeHtml(p.slug)} · ${escapeHtml(p.category)} · ${escapeHtml(p.status)}</div></div>`;const b=document.createElement('button');b.textContent='Edit';b.style.cssText='padding:7px 10px;border:1px solid #d1d5db;background:#fff;border-radius:7px';b.onclick=()=>fill(p);row.appendChild(b);products.appendChild(row);}if(!(d.products||[]).length)products.innerHTML='<div style="color:#6b7280;padding:18px 0">No D1 products yet.</div>';}
+function parseJson(text){try{const v=JSON.parse(text||'[]');return Array.isArray(v)?v:[];}catch{return [];}}
+async function save(){message.textContent='Saving…';const payload={id:field('id')||undefined,slug:field('slug'),nameEn:field('nameEn'),nameZh:field('nameZh'),category:field('category'),image:field('image')||null,description:field('description'),moq:field('moq'),oem:$('oem').checked,status:field('status'),gallery:parseJson(field('gallery')),variants:parseJson(field('variants')),seoTitle:field('seoTitle'),seoDescription:field('seoDescription')};const r=await api('/api/admin/products',{method:'POST',headers:{'X-Admin-Request':'1'},body:JSON.stringify(payload)});const d=await r.json();message.textContent=r.ok?'Saved.':(d.error||'Save failed.');if(r.ok)loadProducts();}
+$('login').onclick=login;$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});$('refresh').onclick=loadProducts;$('save').onclick=save;$('clear').onclick=()=>['id','slug','nameEn','nameZh','category','image','description','moq','gallery','variants','seoTitle','seoDescription'].forEach(id=>{if(id!=='id')$(id).value='';});$('logout').onclick=async()=>{await api('/api/admin/logout',{method:'POST'});location.reload()};
+</script></body></html>
