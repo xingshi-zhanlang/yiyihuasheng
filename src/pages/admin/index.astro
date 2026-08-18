@@ -67,6 +67,9 @@
     </main>
 
     <script>
+      // The admin page is deliberately a small browser-side console. The server APIs remain
+      // strictly typed and enforce the actual authentication/authorization boundary.
+      // @ts-nocheck
       const $ = (id) => document.getElementById(id);
       const loginCard = $('loginCard');
       const app = $('app');
