@@ -9,8 +9,5 @@
       "binding": "DB",
       "database_name": "hidream-pet"
     }
-  ],
-  "triggers": {
-    "crons": ["*/5 * * * *"]
-  }
+  ]
 }
