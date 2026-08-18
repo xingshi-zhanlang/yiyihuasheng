@@ -4,10 +4,14 @@
   "main": "./src/worker.ts",
   "compatibility_date": "2026-08-17",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "hidream-pet"
     }
-  ]
+  ],
+  "triggers": {
+    "crons": []
+  }
 }
