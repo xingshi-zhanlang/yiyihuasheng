@@ -3,7 +3,7 @@ import type { PluginDescriptor } from 'emdash';
 import { z } from 'astro/zod';
 
 const id = 'github-media';
-const version = '0.1.0';
+const version = '0.1.1';
 const adminEntry = './src/plugins/github-media/admin.tsx';
 const entrypoint = './src/plugins/github-media/index.ts';
 
@@ -37,20 +37,23 @@ function base64Bytes(value: string): number {
 }
 
 async function githubRequest(ctx: any, url: string, init: RequestInit = {}) {
-  const response = await ctx.http?.fetch(url, {
+  const token = await ctx.kv.get<string>('settings:githubToken');
+  if (!token) throw new Error('GitHub token is not configured');
+
+  const response = await ctx.http.fetch(url, {
     ...init,
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${await ctx.kv.get<string>('settings:githubToken')}`,
-      'X-GitHub-Api-Version': '2026-03-10',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
       ...(init.headers || {}),
     },
   });
-  if (!response) throw new Error('GitHub network capability is unavailable');
+
   return response;
 }
 
-export function createGithubMediaPlugin() {
+export function createPlugin() {
   return definePlugin({
     id,
     version,
@@ -65,14 +68,14 @@ export function createGithubMediaPlugin() {
         githubToken: {
           type: 'secret',
           label: 'GitHub Fine-grained Token',
-          description: 'Contents: read/write on this repository only. Never paste a classic token here.',
+          description: 'Contents: read/write on this repository only.',
         },
       },
       pages: [{ path: '/upload', label: 'Media Upload', icon: 'image' }],
     },
     routes: {
       status: {
-        handler: async (_ctx: any, ctx: any) => {
+        handler: async (ctx) => {
           const owner = await ctx.kv.get<string>('settings:githubOwner');
           const repo = await ctx.kv.get<string>('settings:githubRepo');
           const branch = (await ctx.kv.get<string>('settings:githubBranch')) || 'main';
@@ -86,18 +89,24 @@ export function createGithubMediaPlugin() {
           contentBase64: z.string().min(16).max(7_000_000),
           message: z.string().min(1).max(140).default('content: add site media'),
         }),
-        handler: async (routeCtx: any, ctx: any) => {
+        handler: async (ctx) => {
+          const { path: inputPath, contentBase64: rawBase64, message } = ctx.input as {
+            path: string;
+            contentBase64: string;
+            message: string;
+          };
+
           const owner = await ctx.kv.get<string>('settings:githubOwner');
           const repo = await ctx.kv.get<string>('settings:githubRepo');
           const branch = (await ctx.kv.get<string>('settings:githubBranch')) || 'main';
-          const token = await ctx.kv.get<string>('settings:githubToken');
-          if (!owner || !repo || !token) throw new Response('GitHub media settings are incomplete', { status: 503 });
+          if (!owner || !repo || !(await ctx.kv.get<string>('settings:githubToken'))) {
+            throw new Response('GitHub media settings are incomplete', { status: 503 });
+          }
 
-          const path = safePath(routeCtx.input.path);
+          const path = safePath(inputPath);
           assertImageName(path);
-          const contentBase64 = routeCtx.input.contentBase64.replace(/\s/g, '');
-          const bytes = base64Bytes(contentBase64);
-          if (bytes > 5 * 1024 * 1024) {
+          const contentBase64 = rawBase64.replace(/\s/g, '');
+          if (base64Bytes(contentBase64) > 5 * 1024 * 1024) {
             throw new Response('Image must be 5 MiB or smaller in free mode', { status: 413 });
           }
 
@@ -118,7 +127,7 @@ export function createGithubMediaPlugin() {
           const response = await githubRequest(ctx, apiUrl, {
             method: 'PUT',
             body: JSON.stringify({
-              message: routeCtx.input.message,
+              message,
               content: contentBase64,
               branch,
               ...(sha ? { sha } : {}),
@@ -143,4 +152,4 @@ export function createGithubMediaPlugin() {
   });
 }
 
-export default githubMediaPlugin;
+export default createPlugin;
