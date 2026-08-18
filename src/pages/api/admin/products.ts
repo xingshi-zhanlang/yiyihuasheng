@@ -31,7 +31,7 @@ function out(data: unknown, status = 200) {
 }
 
 export const GET: APIRoute = async ({ request, locals }) => {
-  const env = (locals.runtime?.env || {}) as Env;
+  const env = (locals.runtime?.env || {}) as unknown as Env;
   if (!(await requireAdmin(request, env))) return out({ ok: false, error: 'Unauthorized' }, 401);
   if (!env.DB) return out({ ok: false, error: 'D1 is not configured' }, 503);
   await ready(env.DB);
@@ -40,7 +40,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const env = (locals.runtime?.env || {}) as Env;
+  const env = (locals.runtime?.env || {}) as unknown as Env;
   if (!(await requireAdmin(request, env)) || !csrfOk(request)) return out({ ok: false, error: 'Unauthorized' }, 401);
   if (!env.DB) return out({ ok: false, error: 'D1 is not configured' }, 503);
   const body = (await request.json()) as Record<string, unknown>;
@@ -64,7 +64,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 };
 
 export const DELETE: APIRoute = async ({ request, locals }) => {
-  const env = (locals.runtime?.env || {}) as Env;
+  const env = (locals.runtime?.env || {}) as unknown as Env;
   if (!(await requireAdmin(request, env)) || !csrfOk(request)) return out({ ok: false, error: 'Unauthorized' }, 401);
   if (!env.DB) return out({ ok: false, error: 'D1 is not configured' }, 503);
   const id = new URL(request.url).searchParams.get('id');
