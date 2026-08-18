@@ -1,5 +1,16 @@
 ---
-// Keep a short, memorable admin URL while EmDash owns authentication and the
-// actual admin application at /_emdash/admin.
-return Astro.redirect('/_emdash/admin', 302);
+const configured = Boolean(import.meta.env.ADMIN_USER && import.meta.env.ADMIN_PASSWORD);
 ---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>HiDREAM Admin</title>
+  </head>
+  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 60px auto; padding: 24px;">
+    <h1>HiDREAM Admin</h1>
+    <p>Free Worker mode admin shell. Product management and media publishing are being migrated to the D1 + GitHub Static Assets backend.</p>
+    <p>{configured ? 'Admin credentials are configured.' : 'ADMIN_USER / ADMIN_PASSWORD are not configured yet.'}</p>
+  </body>
+</html>
