@@ -1,8 +1,8 @@
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
-import { d1, r2 } from '@emdash-cms/cloudflare';
-import emdash from 'emdash/astro';
+import { d1 } from '@emdash-cms/cloudflare';
+import emdash, { local } from 'emdash/astro';
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -19,9 +19,13 @@ export default defineConfig({
     react(),
     emdash({
       database: d1({ binding: 'DB', session: 'auto' }),
-      storage: r2({ binding: 'MEDIA' }),
-      // Keep the first production migration plugin-free. Dynamic Worker
-      // plugins are intentionally not enabled until the site is validated.
+      // Zero-cost mode: no R2 binding. Existing/catalog media lives in public/.
+      // The local adapter is kept only to satisfy EmDash's required storage interface;
+      // durable runtime uploads are intentionally not promised in Worker deployments.
+      storage: local({
+        directory: './public/images/uploads',
+        baseUrl: '/images/uploads',
+      }),
       plugins: [],
       toolbar: 'client',
       siteUrl,
