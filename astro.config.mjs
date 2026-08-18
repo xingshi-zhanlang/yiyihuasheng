@@ -5,6 +5,7 @@ import { d1 } from '@emdash-cms/cloudflare';
 import emdash, { local } from 'emdash/astro';
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import { githubMediaPlugin } from './src/plugins/github-media/index.ts';
 
 // Keep the repository domain-neutral until the production .com domain is purchased.
 // Cloudflare preview/production can provide PUBLIC_SITE_URL as an environment variable.
@@ -26,7 +27,7 @@ export default defineConfig({
         directory: './public/images/uploads',
         baseUrl: '/images/uploads',
       }),
-      plugins: [],
+      plugins: [githubMediaPlugin()],
       toolbar: 'client',
       siteUrl,
     }),
