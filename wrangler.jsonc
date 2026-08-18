@@ -1,17 +1,17 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "yiyihuasheng",
-  "main": "./src/worker.ts",
+  "main": "./dist/_worker.js",
   "compatibility_date": "2026-08-17",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "assets": {
+    "directory": "./dist"
+  },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "hidream-pet"
     }
-  ],
-  "triggers": {
-    "crons": []
-  }
+  ]
 }
