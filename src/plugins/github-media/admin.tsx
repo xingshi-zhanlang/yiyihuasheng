@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { usePluginAPI } from '@emdash-cms/admin';
+import { useEffect, useState } from 'react';
 
 interface Status {
   configured: boolean;
@@ -9,39 +8,65 @@ interface Status {
   tokenSet: boolean;
 }
 
+type PluginResponse<T> = T | { data?: T };
+
+async function pluginRequest<T>(route: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`/_emdash/api/plugins/github-media/${route}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-EmDash-Request': '1',
+      ...(options.headers || {}),
+    },
+  });
+
+  const payload = (await response.json()) as PluginResponse<T>;
+  if (!response.ok) {
+    const message = typeof payload === 'object' && payload && 'data' in payload
+      ? JSON.stringify(payload.data)
+      : JSON.stringify(payload);
+    throw new Error(message || `Request failed (${response.status})`);
+  }
+
+  return (typeof payload === 'object' && payload && 'data' in payload ? payload.data : payload) as T;
+}
+
 export const pages = {
   '/upload': function MediaUploadPage() {
-    const api = usePluginAPI();
     const [status, setStatus] = useState<Status | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState('content: add site media');
     const [busy, setBusy] = useState(false);
-    const [result, setResult] = useState<string>('');
+    const [result, setResult] = useState('');
 
     useEffect(() => {
-      api.get('status').then((response) => setStatus((response as { data?: Status }).data ?? (response as Status)));
+      pluginRequest<Status>('status').then(setStatus).catch((error) => setResult(error.message));
     }, []);
 
     async function upload() {
       if (!file) return;
       setBusy(true);
       setResult('');
+
       try {
         if (file.size > 5 * 1024 * 1024) throw new Error('Free mode supports images up to 5 MiB.');
         if (!/^image\/(png|jpeg|webp|avif|gif)$/i.test(file.type)) throw new Error('Unsupported image type.');
 
-        const buffer = await file.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
+        const bytes = new Uint8Array(await file.arrayBuffer());
         let binary = '';
         const chunk = 0x8000;
         for (let i = 0; i < bytes.length; i += chunk) {
           binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
         }
+
         const contentBase64 = btoa(binary);
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-');
         const path = `images/uploads/${Date.now()}-${safeName}`;
-        const response = await api.post('upload', { path, contentBase64, message });
-        const data = (response as { data?: { url?: string } }).data ?? (response as { url?: string });
+        const data = await pluginRequest<{ ok: boolean; url?: string }>('upload', {
+          method: 'POST',
+          body: JSON.stringify({ path, contentBase64, message }),
+        });
+
         setResult(`Uploaded: ${data.url ?? `/${path}`}`);
         setFile(null);
       } catch (error) {
@@ -72,7 +97,7 @@ export const pages = {
           <input
             type="file"
             accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            onChange={(event) => setFile(event.currentTarget.files?.[0] ?? null)}
             style={{ marginTop: 8 }}
           />
           {file && <div style={{ marginTop: 8 }}>{file.name} · {(file.size / 1024 / 1024).toFixed(2)} MiB</div>}
@@ -80,10 +105,19 @@ export const pages = {
 
         <div style={{ marginTop: 20 }}>
           <label style={{ display: 'block', fontWeight: 600 }}>Commit message</label>
-          <input value={message} onChange={(event) => setMessage(event.target.value)} style={{ marginTop: 8, width: '100%', padding: 10 }} />
+          <input
+            value={message}
+            onChange={(event) => setMessage(event.currentTarget.value)}
+            style={{ marginTop: 8, width: '100%', padding: 10 }}
+          />
         </div>
 
-        <button type="button" onClick={upload} disabled={!file || busy || !status?.configured} style={{ marginTop: 20, padding: '10px 18px', borderRadius: 10 }}>
+        <button
+          type="button"
+          onClick={upload}
+          disabled={!file || busy || !status?.configured}
+          style={{ marginTop: 20, padding: '10px 18px', borderRadius: 10 }}
+        >
           {busy ? 'Uploading…' : 'Upload to Static Assets'}
         </button>
 
