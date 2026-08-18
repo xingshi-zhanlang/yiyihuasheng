@@ -1,5 +1,4 @@
 ---
-const configured = Boolean(import.meta.env.ADMIN_USER && import.meta.env.ADMIN_PASSWORD);
 ---
 
 <html lang="en">
@@ -8,9 +7,137 @@ const configured = Boolean(import.meta.env.ADMIN_USER && import.meta.env.ADMIN_P
     <meta name="viewport" content="width=device-width" />
     <title>HiDREAM Admin</title>
   </head>
-  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 60px auto; padding: 24px;">
-    <h1>HiDREAM Admin</h1>
-    <p>Free Worker mode admin shell. Product management and media publishing are being migrated to the D1 + GitHub Static Assets backend.</p>
-    <p>{configured ? 'Admin credentials are configured.' : 'ADMIN_USER / ADMIN_PASSWORD are not configured yet.'}</p>
+  <body style="margin:0;background:#f6f7f9;color:#171717;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+    <main style="max-width:1100px;margin:0 auto;padding:32px 20px;">
+      <section id="loginCard" style="max-width:420px;margin:80px auto;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,.05);">
+        <h1 style="margin:0 0 8px;font-size:28px;">HiDREAM Admin</h1>
+        <p style="color:#6b7280;margin:0 0 24px;">Private store management console</p>
+        <label style="display:block;font-weight:600;margin-bottom:6px;">Username</label>
+        <input id="user" autocomplete="username" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d1d5db;border-radius:10px;margin-bottom:16px;" />
+        <label style="display:block;font-weight:600;margin-bottom:6px;">Password</label>
+        <input id="password" type="password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d1d5db;border-radius:10px;margin-bottom:16px;" />
+        <button id="login" type="button" style="width:100%;padding:12px;border:0;border-radius:10px;background:#111827;color:white;font-weight:700;cursor:pointer;">Sign in</button>
+        <div id="loginError" style="color:#b91c1c;margin-top:12px;min-height:20px;"></div>
+      </section>
+
+      <section id="app" hidden>
+        <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:16px;">
+          <div>
+            <h1 style="margin:0;font-size:30px;">HiDREAM Admin</h1>
+            <p style="margin:6px 0 0;color:#6b7280;">Products · D1-backed</p>
+          </div>
+          <button id="logout" type="button" style="padding:10px 16px;border:1px solid #d1d5db;background:#fff;border-radius:10px;cursor:pointer;">Sign out</button>
+        </header>
+
+        <section style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start;">
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h2 style="margin:0;font-size:20px;">Products</h2>
+              <button id="refresh" type="button" style="padding:8px 12px;border:1px solid #d1d5db;background:#fff;border-radius:8px;">Refresh</button>
+            </div>
+            <div id="products" style="display:grid;gap:10px;"></div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;">
+            <h2 style="margin:0 0 14px;font-size:20px;">Add / edit product</h2>
+            <input id="id" type="hidden" />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Slug</label>
+            <input id="slug" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" placeholder="soft-pet-carrier" />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">English name</label>
+            <input id="nameEn" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Chinese name</label>
+            <input id="nameZh" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Category</label>
+            <input id="category" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" placeholder="carrier-bags" />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Image URL</label>
+            <input id="image" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" placeholder="/images/products/..." />
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Description</label>
+            <textarea id="description" rows="5" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;"></textarea>
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">MOQ</label>
+            <input id="moq" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;" />
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;margin-bottom:14px;"><input id="oem" type="checkbox" /> OEM available</label>
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:5px;">Status</label>
+            <select id="status" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:14px;"><option value="draft">Draft</option><option value="published">Published</option></select>
+            <button id="save" type="button" style="width:100%;padding:11px;border:0;border-radius:9px;background:#111827;color:#fff;font-weight:700;">Save product</button>
+            <button id="clear" type="button" style="width:100%;padding:10px;border:0;background:transparent;color:#6b7280;margin-top:8px;">Clear</button>
+            <div id="message" style="min-height:22px;margin-top:12px;color:#374151;"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const loginCard = $('loginCard');
+      const app = $('app');
+      const loginError = $('loginError');
+      const message = $('message');
+      const productsBox = $('products');
+
+      function api(url, options = {}) {
+        return fetch(url, { credentials: 'same-origin', ...options, headers: { 'content-type': 'application/json', ...(options.headers || {}) } });
+      }
+
+      function showApp() {
+        loginCard.hidden = true;
+        app.hidden = false;
+        loadProducts();
+      }
+
+      async function login() {
+        loginError.textContent = '';
+        const response = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ user: $('user').value, password: $('password').value }) });
+        if (!response.ok) { loginError.textContent = 'Invalid username or password.'; return; }
+        showApp();
+      }
+
+      async function loadProducts() {
+        const response = await api('/api/admin/products');
+        if (response.status === 401) { loginCard.hidden = false; app.hidden = true; return; }
+        const data = await response.json();
+        productsBox.textContent = '';
+        for (const product of data.products || []) {
+          const row = document.createElement('div');
+          row.style.cssText = 'border:1px solid #e5e7eb;border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:center;';
+          row.innerHTML = `<div><div style="font-weight:700">${escapeHtml(product.name_en)}</div><div style="font-size:12px;color:#6b7280">${escapeHtml(product.slug)} · ${escapeHtml(product.category)} · ${escapeHtml(product.status)}</div></div>`;
+          const edit = document.createElement('button');
+          edit.textContent = 'Edit'; edit.style.cssText = 'padding:7px 10px;border:1px solid #d1d5db;background:#fff;border-radius:7px;';
+          edit.onclick = () => fillProduct(product);
+          row.appendChild(edit);
+          productsBox.appendChild(row);
+        }
+        if (!(data.products || []).length) productsBox.innerHTML = '<div style="color:#6b7280;padding:18px 0">No D1 products yet.</div>';
+      }
+
+      function escapeHtml(value) { return String(value ?? '').replace(/[&<>\"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;' }[c])); }
+      function fillProduct(p) {
+        $('id').value = p.id || '';
+        $('slug').value = p.slug || '';
+        $('nameEn').value = p.name_en || '';
+        $('nameZh').value = p.name_zh || '';
+        $('category').value = p.category || '';
+        $('image').value = p.image || '';
+        $('description').value = p.description || '';
+        $('moq').value = p.moq || '';
+        $('oem').checked = Boolean(p.oem);
+        $('status').value = p.status || 'draft';
+      }
+
+      async function save() {
+        message.textContent = 'Saving…';
+        const payload = { id: $('id').value || undefined, slug: $('slug').value, nameEn: $('nameEn').value, nameZh: $('nameZh').value, category: $('category').value, image: $('image').value || null, description: $('description').value, moq: $('moq').value, oem: $('oem').checked, status: $('status').value };
+        const response = await api('/api/admin/products', { method: 'POST', headers: { 'X-Admin-Request': '1' }, body: JSON.stringify(payload) });
+        const data = await response.json();
+        message.textContent = response.ok ? 'Saved.' : (data.error || 'Save failed.');
+        if (response.ok) loadProducts();
+      }
+
+      $('login').onclick = login;
+      $('password').addEventListener('keydown', (event) => { if (event.key === 'Enter') login(); });
+      $('refresh').onclick = loadProducts;
+      $('save').onclick = save;
+      $('clear').onclick = () => document.querySelectorAll('#app input, #app textarea').forEach((el) => { if (el.id !== 'id') el.value = ''; });
+      $('logout').onclick = async () => { await api('/api/admin/logout', { method: 'POST' }); location.reload(); };
+    </script>
   </body>
 </html>
