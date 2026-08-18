@@ -10,12 +10,6 @@
       "database_name": "hidream-pet"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "MEDIA",
-      "bucket_name": "hidream-pet-media"
-    }
-  ],
   "triggers": {
     "crons": ["*/5 * * * *"]
   }
